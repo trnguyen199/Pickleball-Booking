@@ -1,5 +1,7 @@
-package ut.edu.jpademo.models;
+package ut.edu.Pickleball_Booking.models;
 import jakarta.persistence.*;
+import java.util.*;
+
 @Entity
 @Table(name="users")
 
@@ -40,4 +42,12 @@ public class User {
         this.password = password;
     }
     public User() {}
+    @ManyToMany
+    @JoinTable(
+            name = "UserPermission",
+            joinColumns = @JoinColumn(name = "userId"),
+            inverseJoinColumns = @JoinColumn(name = "permissionId")
+    )
+    private Set<Permission> permissions = new HashSet<>();
+
 }

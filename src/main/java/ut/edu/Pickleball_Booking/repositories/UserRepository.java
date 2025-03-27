@@ -1,6 +1,6 @@
-package ut.edu.jpademo.repositories;
+package ut.edu.Pickleball_Booking.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ut.edu.jpademo.models.User;
+import ut.edu.Pickleball_Booking.models.User;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 @Repository

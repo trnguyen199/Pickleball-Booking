@@ -1,6 +1,6 @@
-package ut.edu.jpademo.services;
-import ut.edu.jpademo.models.User;
-import ut.edu.jpademo.repositories.UserRepository;
+package ut.edu.Pickleball_Booking.services;
+import ut.edu.Pickleball_Booking.models.User;
+import ut.edu.Pickleball_Booking.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;

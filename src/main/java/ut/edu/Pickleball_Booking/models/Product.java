@@ -1,4 +1,4 @@
-package ut.edu.jpademo.models;
+package ut.edu.Pickleball_Booking.models;
 
 import jakarta.persistence.*;
 
