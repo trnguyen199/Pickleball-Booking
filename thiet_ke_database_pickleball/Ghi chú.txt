@@ -1,0 +1,59 @@
+1.Users (Người dùng): Lưu thông tin khách hàng và quản trị viên.
+
+user_id: Mã định danh duy nhất.
+
+full_name, email, phone: Thông tin cá nhân.
+
+password_hash: Mật khẩu được mã hóa.
+
+role: Xác định quyền (khách hàng hay quản trị viên).
+
+created_at: Ngày tạo tài khoản.
+
+
+2.Courts (Sân chơi): Quản lý sân pickleball.
+
+court_id: ID duy nhất.
+
+name, location: Tên sân và địa chỉ.
+
+price_per_hour: Giá thuê theo giờ.
+
+status: Trạng thái sân (sẵn sàng hay bảo trì).
+
+
+3.Bookings (Đặt sân): Lưu thông tin đặt sân của người dùng.
+
+booking_id: ID đơn đặt sân.
+
+user_id, court_id: Người đặt và sân đã đặt.
+
+booking_date, start_time, end_time: Ngày và giờ đặt sân.
+
+total_price: Tổng tiền dựa trên số giờ.
+
+status: Trạng thái đặt chỗ (chờ xác nhận, xác nhận, hủy).
+
+
+4.Payments (Thanh toán): Quản lý giao dịch thanh toán.
+
+payment_id: ID giao dịch.
+
+booking_id: Giao dịch liên kết với đặt sân nào.
+
+amount: Số tiền thanh toán.
+
+payment_method: Phương thức thanh toán.
+
+status: Trạng thái thanh toán (chờ xử lý, thành công, thất bại).
+
+
+5.Reviews (Đánh giá sân): Người dùng đánh giá chất lượng sân.
+
+review_id: ID đánh giá.
+
+user_id, court_id: Người đánh giá và sân được đánh giá.
+
+rating: Sao từ 1 đến 5.
+
+comment: Nhận xét chi tiết.
