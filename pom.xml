@@ -9,16 +9,19 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.in28minutes.springboot.rest.example</groupId>
-    <artifactId>spring-boot-2-jpa-with-hibernate-and-h2</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>pic.booking</groupId>
+    <artifactId>PickleballBooking</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>spring-boot-2-jpa-with-hibernate-and-h2</name>
+    <name>PickleballBooking</name>
     <description>Spring Boot 2, Hibernate, JPA and H2 - Example Project</description>
 
     <properties>
         <java.version>17</java.version>
+        <maven.compiler.source>19</maven.compiler.source>
+        <maven.compiler.target>19</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
@@ -37,8 +40,8 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
