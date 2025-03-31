@@ -4,7 +4,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.userapi.dto.*;
 import com.example.userapi.entity.User;
-import com.example.userapi.repository.UserRepository;
 
 @Service
 public class UserService {
