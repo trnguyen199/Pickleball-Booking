@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pickleball Booking</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    select, button { margin: 10px 0; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Pickleball Booking System</h1>
+
+  <h2>Đặt sân</h2>
+  <label>Người dùng:</label>
+  <select id="userSelect"></select><br>
+
+  <label>Sân chơi:</label>
+  <select id="courtSelect"></select><br>
+
+  <button onclick="createBooking()">Đặt sân</button>
+
+  <h2>Danh sách đặt sân</h2>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Người dùng</th><th>Sân</th></tr>
+    </thead>
+    <tbody id="bookingList"></tbody>
+  </table>
+
+  <script>
+    const API = "http://localhost:8080";
+
+    let users = [];
+    let courts = [];
+
+    async function loadUsers() {
+      const res = await fetch(`${API}/users`);
+      users = await res.json();
+      const select = document.getElementById('userSelect');
+      users.forEach(user => {
+        const opt = document.createElement('option');
+        opt.value = user.id;
+        opt.textContent = user.name;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadCourts() {
+      const res = await fetch(`${API}/courts`);
+      courts = await res.json();
+      const select = document.getElementById('courtSelect');
+      courts.forEach(court => {
+        const opt = document.createElement('option');
+        opt.value = court.id;
+        opt.textContent = court.location;
+        select.appendChild(opt);
+      });
+    }
+
+    async function loadBookings() {
+      const res = await fetch(`${API}/bookings`);
+      const bookings = await res.json();
+      const tbody = document.getElementById('bookingList');
+      tbody.innerHTML = "";
+      bookings.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${b.id}</td>
+          <td>${users.find(u => u.id === b.userId)?.name || b.userId}</td>
+          <td>${courts.find(c => c.id === b.courtId)?.location || b.courtId}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function createBooking() {
+      const userId = document.getElementById('userSelect').value;
+      const courtId = document.getElementById('courtSelect').value;
+
+      const res = await fetch(`${API}/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: +userId, courtId: +courtId })
+      });
+
+      if (res.ok) {
+        alert('Đặt sân thành công!');
+        loadBookings();
+      } else {
+        alert('Có lỗi xảy ra khi đặt sân.');
+      }
+    }
+
+    window.onload = async () => {
+      await loadUsers();
+      await loadCourts();
+      await loadBookings();
+    };
+  </script>
+</body>
+</html>
