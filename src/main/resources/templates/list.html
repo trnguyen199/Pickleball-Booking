@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Booking</title>
+</head>
+<body>
+    <h2>Danh sách các lượt đặt sân</h2>
+    <a th:href="@{/bookings/new}">Đặt sân mới</a>
+    <table>
+        <tr>
+        <th>Tên khách</th>
+        <th>Ngày</th>
+        <th>Giờ bắt đầu</th>
+        <th>Giờ kết thúc</th>
+        <th>Hành động</th>
+        </tr>
+        <tr th:each="b : ${bookings}">
+        <td th:text="${b.customerName}"></td>
+        <td th:text="${b.bookingDate}"></td>
+        <td th:text="${b.startTime}"></td>
+        <td th:text="${b.endTime}"></td>
+        <td><a th:href="@{'/bookings/delete/' + ${b.id}}">Xóa</a></td>
+        </tr>
+    </table>
+</body>
+</html>
