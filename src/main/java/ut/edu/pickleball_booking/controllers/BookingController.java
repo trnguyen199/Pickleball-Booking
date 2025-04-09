@@ -38,5 +38,6 @@ public class BookingController {
         bookingService.deleteBooking(id);
         return "redirect:/bookings";
     }
+
 }
 
