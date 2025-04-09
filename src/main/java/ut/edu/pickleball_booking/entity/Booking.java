@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String customerName;
     private LocalDate bookingDate;
@@ -19,11 +19,11 @@ public class Booking {
     @JoinColumn(name ="court_id")
     private Court court;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

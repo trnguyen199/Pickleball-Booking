@@ -8,6 +8,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Booking, Integer> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByCourt(LocalDate date);
 }
