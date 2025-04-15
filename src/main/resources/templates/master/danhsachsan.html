@@ -1,0 +1,57 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="master/head :: head"></head>
+<body>
+    <div th:replace="master/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+      <div class="container d-flex gap-4">
+        <!-- Sidebar -->
+        <aside class="sidebar" style="width: 250px;">
+          <h2>Khu vực</h2>
+          <ul style="list-style: none; padding: 0;">
+            <li class="active">Thành phố Hồ Chí Minh<span>156</span></li>
+            <li>Hà Nội <span>3</span></li>
+            <li>Đà Nẵng <span>0</span></li>
+            <li>Thành phố Buôn Ma Thuộc <span>16</span></li>
+            <li >Pickleball <span>123</span></li>
+          </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1">
+          <h1>⭐ Danh sách sân Pickleball ⭐</h1>
+          <div class="card-container d-flex flex-wrap gap-4">
+            <!-- Card 1 -->
+            <div class="card p-3 border rounded shadow-sm" style="width: 300px;">
+              <img src="your-image.png" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
+              <h3>Phố cổ Pickleball</h3>
+              <p>📞 0969345360</p>
+              <p>📍 Địa chỉ đang cập nhật</p>
+              <a class="btn btn-primary" href="/danhsachsan/datsan" >Chi tiết</a>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card p-3 border rounded shadow-sm" style="width: 300px;">
+              <img src="your-image.png" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
+              <h3>Dan Sport Center</h3>
+              <p>📞 0935414999</p>
+              <p>📍 258 Hùng Vương, Đông Lương, TP. Đông Hà, Quảng Trị</p>
+              <button class="btn btn-primary">Chi tiết</button>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card p-3 border rounded shadow-sm" style="width: 300px;">
+              <img src="your-image.png" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
+              <h3>532 Sport</h3>
+              <p>📞 0905090573</p>
+              <p>📍 6 Đường Khánh An 7, Liên Chiểu, Đà Nẵng</p>
+              <button class="btn btn-primary">Chi tiết</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </th:block>
+    <div th:replace="master/_layoutfooter::layout-footer"></div>
+
+</body>
+</html>

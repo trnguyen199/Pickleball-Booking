@@ -17,7 +17,7 @@ public class HomeController {
         this.homeService = homeService;
     }
 
-    @GetMapping("/home")
+    @GetMapping("/trangchu")
     public String homePage(Model model) {
         String welcomeMessage = homeService.getWelcomeMessage();
         model.addAttribute("welcomeMessage", welcomeMessage);
