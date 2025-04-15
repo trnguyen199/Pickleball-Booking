@@ -22290,6 +22290,7 @@ li:not(:first-child) .dropdown-item, .dropdown-menu .dropdown-item:not(:first-ch
 }
 .layout-navbar .navbar {
   transform: translate3d(0, 0, 0);
+
 }
 .layout-navbar .navbar-nav-right {
   flex-basis: 100%;

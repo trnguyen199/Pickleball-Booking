@@ -4,10 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class AuthLoginController {
+public class AuthFgPasswordController {
 
-    @GetMapping("/login")
+    @GetMapping("/forgot-password")
     public String login() {
-        return "master/auth-login"; 
+        return "master/auth-fg-password"; 
     }
 }
