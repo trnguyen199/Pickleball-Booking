@@ -1,20 +1,26 @@
+
 package ut.edu.pickleball_booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import ut.edu.pickleball_booking.dto.request.UserCreationRequest;
-import ut.edu.pickleball_booking.dto.request.UserUpdateRequest;
-import ut.edu.pickleball_booking.entity.User;
-import ut.edu.pickleball_booking.services.UserService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import ut.edu.pickleball_booking.services.HomeService;
 
-import java.util.List;
-
-@RestController
+@Controller
 public class HomeController {
 
-    @PutMapping("/home")
-    public String HomePage() {
-        return "home";
+    private final HomeService homeService;
+
+    @Autowired
+    public HomeController(HomeService homeService) {
+        this.homeService = homeService;
     }
 
+    @GetMapping("/home")
+    public String homePage(Model model) {
+        String welcomeMessage = homeService.getWelcomeMessage();
+        model.addAttribute("welcomeMessage", welcomeMessage);
+        return "home"; 
+    }
 }
