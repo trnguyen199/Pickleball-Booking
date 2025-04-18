@@ -3399,19 +3399,20 @@ textarea.form-control-lg {
 
 .btn-primary {
   --bs-btn-color: #fff;
-  --bs-btn-bg: #696cff;
-  --bs-btn-border-color: #696cff;
+  --bs-btn-bg: #6FC7E1;
+  --bs-btn-border-color: #6FC7E1
+  ;
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #5f61e6;
-  --bs-btn-hover-border-color: #5456cc;
+  --bs-btn-hover-bg: #6FC7E1;
+  --bs-btn-hover-border-color: #6FC7E1;
   --bs-btn-focus-shadow-rgb: 128, 130, 255;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #5f61e6;
-  --bs-btn-active-border-color: #4f51bf;
+  --bs-btn-active-bg: #6FC7E1;
+  --bs-btn-active-border-color: #6FC7E1;
   --bs-btn-active-shadow: none;
   --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #696cff;
-  --bs-btn-disabled-border-color: #696cff;
+  --bs-btn-disabled-bg: #6FC7E1;
+  --bs-btn-disabled-border-color: #6FC7E1;
 }
 
 .btn-secondary {
@@ -4802,6 +4803,9 @@ textarea.form-control-lg {
   background-clip: border-box;
   border: var(--bs-card-border-width) solid var(--bs-card-border-color);
   border-radius: var(--bs-card-border-radius);
+  width: 60%;
+  margin: 0 auto;
+
 }
 .card > hr {
   margin-right: 0;
@@ -7584,7 +7588,7 @@ textarea.form-control-lg {
 /* Custom colors
 ******************************************************************************* */
 :root {
-  --bs-primary: #696cff;
+  --bs-primary: #6FC7E1;
   --bs-primary-rgb: 105, 108, 255;
   --bs-secondary: #8592a3;
   --bs-secondary-rgb: 133, 146, 163;
@@ -23357,4 +23361,333 @@ body:not(.modal-open) .layout-content-navbar .layout-navbar {
   --bs-footer-color: var(--bs-body-color);
   --bs-footer-link-color: var(--bs-body-color);
   --bs-footer-brand-color: var(--bs-heading-color);
+}
+
+/* app */
+.wrapper-home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+}
+
+.banner {
+  position: relative;
+  width: 100%;
+  height: 600px; /* Hoặc chiều cao theo yêu cầu */
+  overflow: hidden; /* Ngăn chặn các phần tử thoát ra ngoài banner */
+}
+
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng */
+}
+
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* Màu nền tối */
+  z-index: 1;
+}
+
+
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  z-index: 2;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.content h2, h3, label {
+  color: #fff;
+
+}
+/* Cấu trúc của phần tìm kiếm */
+.main-search-input-wrap {
+  position: absolute;
+  top: 60%; /* Đặt phần tìm kiếm ở vị trí thích hợp trong banner */
+  left: 50%;
+  transform: translateX(-50%); /* Đảm bảo tìm kiếm nằm ở giữa banner */
+  width: 100%;
+  max-width: 960px; /* Giới hạn chiều rộng tối đa của phần tìm kiếm */
+  padding: 20px;
+  z-index: 2;
+}
+
+/* Bố trí tìm kiếm bằng flexbox */
+.main-search-input {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Các phần tử trong tìm kiếm */
+.main-search-input-item {
+  flex: 1 1 30%; /* Mỗi phần tử sẽ có độ rộng tối thiểu là 30% */
+  margin: 5px; /* Khoảng cách giữa các phần tử */
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+}
+
+.main-search-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: rgb(249, 185, 15);
+  border-color: rgb(249, 185, 15);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px; /* Bo góc */
+}
+
+.main-search-button .v-btn__content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* nav */
+.fixed-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* home sub intro */
+.home-sub-intro {
+  height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0; /* Cung cấp khoảng cách bên trong cho các phần tử */
+  color: #000;
+}
+.home-sub-intro h3{
+  color: #000;
+}
+.home-sub-intro .container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-sub-intro .row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.home-sub-intro .col-sm-4,
+.home-sub-intro .col-12 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+.home-sub-intro img {
+  max-height: 150px; /* Đảm bảo ảnh không chiếm quá nhiều không gian */
+  object-fit: contain; /* Giữ tỷ lệ hình ảnh */
+}
+
+.home-sub-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.home-sub-des {
+  font-size: 14px;
+  color: #666;
+}
+
+.subscribe-footer {
+  background-color: #f9f9f9;
+  padding: 40px 0;
+}
+
+.subscribe-img {
+  max-width: 80px;
+  height: auto;
+}
+
+.subscribe-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.subscribe-form input {
+  height: 48px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.subscribe-form button {
+  height: 48px;
+  font-weight: bold;
+}
+
+
+/* footer  */
+
+
+.container-xl {
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #2E5CBF;
+}
+
+.header-links a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+}
+
+.footer-content {
+  display: flex;
+  margin-top: 30px;
+}
+
+.sidebar {
+  width: 30%;
+  padding-right: 30px;
+}
+
+.sidebar-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.sidebar-links a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.contact-info {
+  width: 70%;
+  padding: 20px;
+  background-color: #6FC7E1;
+  border-radius: 5px;
+}
+
+.contact-title {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.company-info, .contact-details {
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.info-item img {
+  margin-right: 10px;
+}
+
+.contact-box {
+  background-color: #5cb6d0;
+  padding: 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contact-box-text {
+  font-weight: bold;
+}
+
+.contact-box-button {
+  background-color: #FFDA63;
+  color: #19376D;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.social-links {
+  margin-top: 30px;
+}
+
+.social-links-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-right: 15px;
+  opacity: 0.7;
+}
+
+.social-icons a:hover {
+  opacity: 1;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px 0;
+  border-top: 1px solid #2E5CBF;
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-left {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.footer-right a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
 }

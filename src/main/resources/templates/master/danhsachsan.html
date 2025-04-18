@@ -9,11 +9,33 @@
         <aside class="sidebar" style="width: 250px;">
           <h2>Khu vực</h2>
           <ul style="list-style: none; padding: 0;">
-            <li class="active">Thành phố Hồ Chí Minh<span>156</span></li>
-            <li>Hà Nội <span>3</span></li>
-            <li>Đà Nẵng <span>0</span></li>
-            <li>Thành phố Buôn Ma Thuộc <span>16</span></li>
-            <li >Pickleball <span>123</span></li>
+            <ul>
+              <li class="active">Thành phố Hồ Chí Minh</li>
+              <li>Quận 1</li>
+              <li>Quận 2</li>
+              <li>Quận 3</li>
+              <li>Quận 4</li>
+              <li>Quận 5</li>
+              <li>Quận 6</li>
+              <li>Quận 7</li>
+              <li>Quận 8</li>
+              <li>Quận 10</li>
+              <li>Quận 11</li>
+              <li>Quận 12</li>
+              <li>Quận Bình Tân</li>
+              <li>Quận Bình Thạnh</li>
+              <li>Quận Gò Vấp</li>
+              <li>Quận Phú Nhuận</li>
+              <li>Quận Tân Bình</li>
+              <li>Quận Tân Phú</li>
+              <li>Thành phố Thủ Đức</li> <!-- Thủ Đức là thành phố trực thuộc TP.HCM từ 2021 -->
+              <li>Huyện Bình Chánh</li>
+              <li>Huyện Cần Giờ</li>
+              <li>Huyện Củ Chi</li>
+              <li>Huyện Hóc Môn</li>
+              <li>Huyện Nhà Bè</li>
+          </ul>
+          
           </ul>
         </aside>
 
@@ -23,7 +45,7 @@
           <div class="card-container d-flex flex-wrap gap-4">
             <!-- Card 1 -->
             <div class="card p-3 border rounded shadow-sm" style="width: 300px;">
-              <img src="your-image.png" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
+              <img th:src="@{/assets/img/elements/img1.jpg}" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
               <h3>Phố cổ Pickleball</h3>
               <p>📞 0969345360</p>
               <p>📍 Địa chỉ đang cập nhật</p>
@@ -32,7 +54,7 @@
 
             <!-- Card 2 -->
             <div class="card p-3 border rounded shadow-sm" style="width: 300px;">
-              <img src="your-image.png" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
+              <img  th:src="@{/assets/img/elements/img2.jpg}" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
               <h3>Dan Sport Center</h3>
               <p>📞 0935414999</p>
               <p>📍 258 Hùng Vương, Đông Lương, TP. Đông Hà, Quảng Trị</p>
@@ -41,7 +63,7 @@
 
             <!-- Card 3 -->
             <div class="card p-3 border rounded shadow-sm" style="width: 300px;">
-              <img src="your-image.png" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
+              <img  th:src="@{/assets/img/elements/img3.jpg}" alt="Sân" style="width: 100%; height: 180px; object-fit: cover;">
               <h3>532 Sport</h3>
               <p>📞 0905090573</p>
               <p>📍 6 Đường Khánh An 7, Liên Chiểu, Đà Nẵng</p>

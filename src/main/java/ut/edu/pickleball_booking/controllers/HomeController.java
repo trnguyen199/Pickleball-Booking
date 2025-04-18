@@ -21,6 +21,6 @@ public class HomeController {
     public String homePage(Model model) {
         String welcomeMessage = homeService.getWelcomeMessage();
         model.addAttribute("welcomeMessage", welcomeMessage);
-        return "home"; 
+        return "master/home"; 
     }
 }
