@@ -1,0 +1,74 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="master/head :: head"></head>
+<body>
+    <div th:replace="master/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+      <div class="container">
+        <div class="qr-box">
+          <h2>Thanh toán gói: <span th:text="${planName}"></span></h2>
+          <p>Giá: <strong th:text="${price}"></strong></p>
+      
+          <!-- Mã QR mẫu -->
+          <img th:src="@{assets/img/icons/intro/qr_pay.png}" alt="QR Code Thanh Toán">
+      
+          <p class="note">Quét mã QR bằng ứng dụng ngân hàng hoặc ví điện tử để thanh toán</p>
+          <p><strong>Nội dung thanh toán:</strong> TT GÓI <span th:text="${planName?.toUpperCase()}"></span> <span th:text="${price}"></span></p>
+
+          <form action="/xac-nhan-thanh-toan" method="POST">
+            <button type="submit">Xác nhận thanh toán</button>
+        </form>
+        </div>
+      </div>
+  
+    </th:block>
+    <div th:replace="master/_layoutfooter::layout-footer"></div>
+    <style>
+      .container {
+        min-height: 100vh;
+    }
+      .qr-box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        margin-top: 200px;
+
+      }
+  
+      .qr-box h2 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+  
+      .qr-box p {
+        font-size: 18px;
+        margin: 10px 0;
+      }
+  
+      .qr-box img {
+        width: 250px;
+        height: 250px;
+        margin: 20px 0;
+      }
+  
+      .note {
+        font-size: 14px;
+        color: #888;
+        margin-top: 10px;
+      }
+  
+      .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #3498db;
+        text-decoration: none;
+      }
+  
+      .back-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+</body>
+</html>

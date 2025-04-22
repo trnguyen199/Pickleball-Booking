@@ -4,10 +4,11 @@
 <body>
     <div th:replace="master/_layoutnavbar::layout-navbar"></div>
     <th:block th:fragment="layout-content">
-        <div class="">
-          <button class="today-btn">Hôm nay</button>
+        <div class="container-booking">
         
           <div class="nav-controls">
+            <span><button class="today-btn">Hôm nay</button></span>
+
             <span>&lt; 14 tháng 04 - 20 tháng 04 2025 &gt;</span>
             <div class="view-toggle">
               <button>Tuần</button>
@@ -32,9 +33,9 @@
               <tbody>
                 <!-- Vòng lặp thời gian -->
                 <tr>
-                  <td class="time-col">05:00</td>
+                  <td class="time-col">06:00 - 08:00</td>
                   <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell"></td>
+                  <td class="price-cell">120.000 đ</td>
                   <td class="price-cell">120.000 đ</td>
                   <td class="price-cell">120.000 đ</td>
                   <td class="price-cell">120.000 đ</td>
@@ -42,9 +43,9 @@
                   <td class="price-cell">120.000 đ</td>
                 </tr>
                 <tr>
-                  <td class="time-col">06:00</td>
+                  <td class="time-col">08:00 - 10:00</td>
                   <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell"></td>
+                  <td class="price-cell">120.000 đ</td>
                   <td class="price-cell">120.000 đ</td>
                   <td class="price-cell">120.000 đ</td>
                   <td class="price-cell">120.000 đ</td>
@@ -52,7 +53,27 @@
                   <td class="price-cell">120.000 đ</td>
                 </tr>
                 <tr>
-                  <td class="time-col">07:00</td>
+                  <td class="time-col">10:00 - 12:00</td>
+                  <td class="price-cell">90.000 đ</td>
+                  <td class="price-cell">90.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                </tr>
+                <tr>
+                  <td class="time-col">12:00 - 14:00</td>
+                  <td class="price-cell">90.000 đ</td>
+                  <td class="price-cell">90.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                  <td class="price-cell">100.000 đ</td>
+                </tr>
+                <tr>
+                  <td class="time-col">12:00 - 14:00</td>
                   <td class="price-cell">90.000 đ</td>
                   <td class="price-cell">90.000 đ</td>
                   <td class="price-cell">100.000 đ</td>
@@ -64,6 +85,7 @@
                 <!-- Add more time slots as needed -->
               </tbody>
             </table>
+            <button class="btn-datsan btn btn-primary" style="margin: 0 auto;">Đặt sân</button>
         </div>
     
         
@@ -92,7 +114,7 @@
     }
 
     th {
-      background-color: #f0f0f0;
+      background-color: #6FC7E1;
     }
 
     .time-col {
@@ -102,10 +124,8 @@
 
     .today-btn {
       padding: 6px 12px;
-      background: white;
       border: 1px solid #ccc;
       cursor: pointer;
-      margin-bottom: 10px;
     }
 
     .nav-controls {
@@ -113,6 +133,7 @@
       align-items: center;
       justify-content: space-between;
       margin: 10px 0;
+      margin-top: 100px;
     }
 
     .view-toggle button {
@@ -124,7 +145,65 @@
       background-color: #fefefe;
       border-radius: 4px;
     }
+    .selected {
+      background-color: rgba(0, 255, 0, 0.3);
+    }
   </style>
 
-
+  <script>
+    const priceCells = document.querySelectorAll('.price-cell');
+    const bookingBtn = document.querySelector('.btn-datsan');
+    let selectedSlots = [];
+  
+    priceCells.forEach(cell => {
+      cell.addEventListener('click', function () {
+        const row = this.closest('tr');
+        const time = row.querySelector('.time-col').innerText;
+  
+        // Lấy vị trí cột hiện tại
+        const colIndex = Array.from(row.children).indexOf(this);
+  
+        // Lấy đúng tiêu đề ngày từ thead (bỏ cột đầu tiên là "Thời gian")
+        const day = document.querySelectorAll('thead th')[colIndex].innerText.trim();
+  
+        const priceText = this.innerText.trim();
+        const price = parseInt(priceText.replace(/\D/g, '')) || 0;
+  
+        const slot = { time, day, price };
+  
+        const index = selectedSlots.findIndex(
+          item => item.time === time && item.day === day
+        );
+  
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          if (index !== -1) selectedSlots.splice(index, 1);
+        } else {
+          this.classList.add('selected');
+          if (index === -1) selectedSlots.push(slot);
+        }
+  
+        console.log('Selected Slots:', selectedSlots);
+      });
+    });
+  
+    // Xử lý khi nhấn nút đặt sân
+    bookingBtn.addEventListener('click', function () {
+      if (selectedSlots.length === 0) {
+        alert('Vui lòng chọn ít nhất một khung giờ.');
+        return;
+      }
+  
+      const total = selectedSlots.reduce((sum, s) => sum + s.price, 0);
+      const bookingData = {
+        slots: selectedSlots,
+        total: total
+      };
+  
+      localStorage.setItem('bookingData', JSON.stringify(bookingData));
+      window.location.href = '/danhsachsan/thanhtoan';
+    });
+  </script>
+  
+  
 </html>

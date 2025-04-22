@@ -1,26 +1,22 @@
 
 package ut.edu.pickleball_booking.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import ut.edu.pickleball_booking.services.HomeService;
+import ut.edu.pickleball_booking.entity.User;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class HomeController {
 
-    private final HomeService homeService;
-
-    @Autowired
-    public HomeController(HomeService homeService) {
-        this.homeService = homeService;
-    }
-
     @GetMapping("/trangchu")
-    public String homePage(Model model) {
-        String welcomeMessage = homeService.getWelcomeMessage();
-        model.addAttribute("welcomeMessage", welcomeMessage);
-        return "master/home"; 
+    public String trangChu(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", user); // Truyền thông tin người dùng vào view nếu cần
+        return "master/home"; // Trả về template tương ứng
     }
+
+
 }

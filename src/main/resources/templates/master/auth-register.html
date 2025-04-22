@@ -23,7 +23,7 @@
                 <h4 class="mb-1">Đặt sân PickleBall</h4>
                 <p class="mb-6">Làm cho việc đặt sân trở nên tiện lợi hơn</p>
   
-                <form id="formAuthentication" class="mb-6" action="index.html">
+                <form id="formAuthentication" class="mb-6" method="post" action="/auth/register-user">
                   <div class="mb-6">
                     <label for="username" class="form-label">Tên đăng nhập</label>
                     <input
@@ -31,15 +31,15 @@
                       class="form-control"
                       id="username"
                       name="username"
-                      placeholder="Enter your username"
+                      placeholder="Nhập tên đăng nhập"
                       autofocus />
                   </div>
                   <div class="mb-6">
                     <label for="email" class="form-label">Email</label>
-                    <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" />
+                    <input type="text" class="form-control" id="email" name="email" placeholder="Nhập email của bạn" />
                   </div>
                   <div class="form-password-toggle">
-                    <label class="form-label" for="password">Password</label>
+                    <label class="form-label" for="password">Mật khẩu</label>
                     <div class="input-group input-group-merge">
                       <input
                         type="password"
@@ -48,7 +48,7 @@
                         name="password"
                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                         aria-describedby="password" />
-                      <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                      <!-- <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span> -->
                     </div>
                   </div>
                   <div class="my-7">
@@ -61,6 +61,8 @@
                     </div>
                   </div>
                   <button class="btn btn-primary d-grid w-100">Đăng ký</button>
+                  <p th:if="${error}" style="color:red;">[[${error}]]</p>
+                  <p th:if="${success}" style="color:green;">[[${success}]]</p>
                 </form>
   
                 <p class="text-center">

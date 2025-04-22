@@ -2,6 +2,9 @@ package ut.edu.pickleball_booking.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -9,21 +12,36 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true , nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 50)
     private String username;
+
     @Column(nullable = false, length = 255)
     private String password;
 
-    // Thêm constructor rỗng
-    public User() {}
+    @Column(nullable = false, length = 100)
+    private String email;
 
-    // Thêm constructor có tham số
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    @Column(nullable = false)
+    private boolean agreedTerms;
 
-    // Thêm getter và setter
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    // public User() {}
+
+    // public User(String username, String password, String email, boolean agreedTerms) {
+    //     this.username = username;
+    //     this.password = password;
+    //     this.email = email;
+    //     this.agreedTerms = agreedTerms;
+    // }
+
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -46,5 +64,29 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isAgreedTerms() {
+        return agreedTerms;
+    }
+
+    public void setAgreedTerms(boolean agreedTerms) {
+        this.agreedTerms = agreedTerms;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

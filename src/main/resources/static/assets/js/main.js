@@ -127,3 +127,40 @@ document.addEventListener('DOMContentLoaded', function () {
 function isMacOS() {
   return /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 }
+
+function checkLogin() {
+  // Kiểm tra nếu người dùng đã đăng nhập (ví dụ, lưu username trong localStorage)
+  const username = localStorage.getItem('username');
+  
+  if (!username) {
+      // Nếu chưa đăng nhập, chuyển hướng đến trang login
+      window.location.href = '/login';
+      return;
+  }
+
+  // Nếu đã đăng nhập, lấy role của người dùng
+  fetch(`http://localhost:8080/api/users/${username}/role`)
+      .then(response => response.json())
+      .then(role => {
+          if (role) {
+              if (role.name === 'OWNER') {
+                  // Nếu là owner, cho phép truy cập vào danhchochusan
+                  window.location.href = '/danhchochusan';
+              } else {
+                  // Nếu không phải owner, chuyển hướng đến danhchochusan/dangky
+                  window.location.href = '/danhchochusan/dangky';
+              }
+          } else {
+              // Nếu không tìm thấy role, có thể người dùng không tồn tại hoặc bị lỗi
+              window.location.href = '/login';
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          // Nếu có lỗi trong việc gọi API, chuyển hướng về trang login
+          window.location.href = '/login';
+      });
+}
+
+// Gọi hàm checkLogin khi trang được tải
+checkLogin();

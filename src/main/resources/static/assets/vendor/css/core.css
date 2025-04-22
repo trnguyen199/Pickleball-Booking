@@ -21571,6 +21571,7 @@ li:not(:first-child) .dropdown-item, .dropdown-menu .dropdown-item:not(:first-ch
 .menu .ps .ps__rail-y.ps--clicking > .ps__thumb-y {
   opacity: 0.3;
 }
+.half-width {width: 49.333333%;}
 
 /*  Menu link */
 .menu-link {
@@ -23413,6 +23414,10 @@ body:not(.modal-open) .layout-content-navbar .layout-navbar {
   color: #fff;
 
 }
+.content h3 {
+  font-weight: 600;
+  font-size: 30px;
+}
 /* Cấu trúc của phần tìm kiếm */
 .main-search-input-wrap {
   position: absolute;
@@ -23420,7 +23425,7 @@ body:not(.modal-open) .layout-content-navbar .layout-navbar {
   left: 50%;
   transform: translateX(-50%); /* Đảm bảo tìm kiếm nằm ở giữa banner */
   width: 100%;
-  max-width: 960px; /* Giới hạn chiều rộng tối đa của phần tìm kiếm */
+  max-width: 740px; 
   padding: 20px;
   z-index: 2;
 }
@@ -23654,7 +23659,9 @@ h2 {
   color: #e74c3c;
   font-size: 1.2rem;
 }
-
+.card h3 {
+  color: #000;
+}
 /* Phần biểu đồ */
 .chart-container {
   width: 100%;
@@ -24090,6 +24097,7 @@ section label {
 .sidebar {
   width: 30%;
   padding-right: 30px;
+  padding-top: 100px;
 }
 
 .sidebar-title {
@@ -24174,6 +24182,182 @@ section label {
   opacity: 1;
 }
 
+/* Trang giới thiệu */
+.vision,
+.team,
+.stats,
+.reviews {
+  margin-bottom: 30px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.team-grid .member {
+  background-color: #eef6ff;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stats ul,
+.features ul {
+  list-style: disc;
+  margin-left: 20px;
+}
+
+.reviews blockquote {
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-left: 4px solid #0077cc;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+.introduc {
+  margin-top: 100px;
+}
+/* Điểu khoản */
+.terms {
+  margin-top: 100px;
+}
+.terms a {
+  color: #0077cc;
+  text-decoration: underline;
+}
+
+.terms ul li::marker {
+  color: #0077cc;
+}
+
+/* Đặt sân  */
+.form-thanhtoan {
+  max-width: 600px;
+  margin: 200px auto;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+.form-thanhtoan ul {
+  list-style: none;
+  padding: 0;
+}
+
+.form-thanhtoan li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.form-thanhtoan p {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #333;
+}
+
+.btn-confirm {
+  display: block;
+  margin: 20px auto 50px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-confirm:hover {
+  background-color: #218838;
+}
+
+.booking-wrapper {
+  height: 100vh;
+}
+/* Profile  */
+/* * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+*/
+.wrapper-ct {
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #009578;
+  margin-bottom: 15px;
+}
+
+.username {
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+}
+
+.role {
+  font-size: 16px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.profile-info {
+  text-align: left;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+.profile-info div {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.edit-btn {
+  padding: 10px 20px;
+  background-color: #009578;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #007e65;
+}
+
+.layout-content {
+  min-height: 100vh;
+}
 .footer {
   text-align: center;
   padding: 20px 0;

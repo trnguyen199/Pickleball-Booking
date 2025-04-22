@@ -20,31 +20,34 @@
             <div class="content-pa">
                 <div class="section active" id="section1">
                     <h1>Cập nhật thông tin chủ sân</h1>
-                
+                    <ul>
+                        <li th:each="role : ${roles}" th:text="${role.name}"></li>
+                    </ul> 
                     <!-- Thông tin cá nhân -->
                     <section id="personal-info">
                     <h2>Thông tin cá nhân</h2>
-                    <form class="form-input" id="info-form">
-                        <label for="full-name">Họ và tên:</label>
-                        <input type="text" id="full-name" name="full-name" value="Nguyễn Văn A" required>
-                
+                    <form class="form-input" id="info-form" th:action="@{/update-owner}" method="post">
+                        <label for="fullName">Họ và tên:</label>
+                        <input type="text" id="fullName" name="fullName" value="${user.username}" required>
+                    
                         <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="nguyenvana@example.com" required>
-                
+                        <input type="email" id="email" name="email" value="${owner.email}" required>
+                    
                         <label for="phone">Số điện thoại:</label>
-                        <input type="tel" id="phone" name="phone" value="0901234567" required>
-                
+                        <input type="tel" id="phone" name="phone" value="${owner.phone}" required>
+                    
                         <label for="address">Địa chỉ:</label>
-                        <input type="text" id="address" name="address" value="123 Đường ABC, Quận 1, TP.HCM" required>
-                
+                        <input type="text" id="address" name="address" value="${owner.address}" required>
+                    
                         <button type="submit">Cập nhật thông tin</button>
                     </form>
+                    
                     </section>
                 
-                    <!-- Thông tin sân -->
-                    <section id="court-info">
+                    <!-- Thông tin sân 
+                    {% comment %} <section id="court-info">
                     <h2>Thông tin sân</h2>
-                    <form id="court-form">
+                    <form id="court-form" action="/update-court" method="post">
                         <label for="court-name">Tên sân:</label>
                         <input type="text" id="court-name" name="court-name" value="Sân Quận 1" required>
                 
@@ -53,10 +56,11 @@
                 
                         <label for="court-phone">Số điện thoại sân:</label>
                         <input type="tel" id="court-phone" name="court-phone" value="0907654321" required>
-                
+                        <input type="hidden" name="ownerId" value="1">
+
                         <button type="submit">Cập nhật thông tin sân</button>
                     </form>
-                    </section>
+                    </section> {% endcomment %}-->
                 </div>
             
                 <div class="section" id="section2">
@@ -68,7 +72,7 @@
                         <table>
                         <thead>
                             <tr>
-                            <th>Tên sân</th>
+                            <th>Tên sân </th>
                             <th>Vị trí</th>
                             <th>Hành động</th>
                             </tr>
@@ -128,7 +132,7 @@
             
                 <div class="section" id="section4">
                     <section id="booking-management">
-                        <h2>Quản lý đặt sân</h2>
+                        <h1>Quản lý đặt sân</h1>
                       
                         <label class="label-set" for="filter-date">Chọn ngày:</label>
                         <input type="date" id="filter-date" name="filter-date" onchange="filterBookings()">
@@ -421,39 +425,60 @@
         alert("Tạo sân thành công!");
         });
     // -----------------------------------------------------quản lý khung giờ -------------------------------
-        function generateSlots() {
-            const openTime = document.getElementById("open-time").value;
-            const closeTime = document.getElementById("close-time").value;
-            const duration = parseInt(document.getElementById("duration").value);
-            const list = document.getElementById("slot-list");
-      
-            list.innerHTML = "";
-      
-            let [oh, om] = openTime.split(":").map(Number);
-            let [ch, cm] = closeTime.split(":").map(Number);
-      
-            let start = new Date();
-            start.setHours(oh, om, 0, 0);
-      
-            let end = new Date();
-            end.setHours(ch, cm, 0, 0);
-      
-            while (start < end) {
-              let slotStart = new Date(start);
-              start.setMinutes(start.getMinutes() + duration);
-              if (start > end) break;
-              let slotEnd = new Date(start);
-      
-              const format = (d) => d.toTimeString().slice(0, 5);
-              const div = document.createElement("div");
-              div.className = "slot-item";
-              div.innerHTML = `
+    function generateSlots() {
+        const openTime = document.getElementById("open-time").value;
+        const closeTime = document.getElementById("close-time").value;
+        const duration = parseInt(document.getElementById("duration").value);
+        const list = document.getElementById("slot-list");
+    
+        list.innerHTML = "";
+    
+        let [oh, om] = openTime.split(":").map(Number);
+        let [ch, cm] = closeTime.split(":").map(Number);
+    
+        let start = new Date();
+        start.setHours(oh, om, 0, 0);
+    
+        let end = new Date();
+        end.setHours(ch, cm, 0, 0);
+    
+        const timeSlots = [];
+    
+        while (start < end) {
+            let slotStart = new Date(start);
+            start.setMinutes(start.getMinutes() + duration);
+            if (start > end) break;
+            let slotEnd = new Date(start);
+    
+            const format = (d) => d.toTimeString().slice(0, 5);
+            const div = document.createElement("div");
+            div.className = "slot-item";
+            div.innerHTML = `
                 ${format(slotStart)} - ${format(slotEnd)}
                 <button onclick="this.parentElement.remove()">Xoá</button>
-              `;
-              list.appendChild(div);
-            }
-          }
+            `;
+            list.appendChild(div);
+    
+            // Tạo các đối tượng TimeSlot
+            timeSlots.push({
+                startTime: format(slotStart),
+                endTime: format(slotEnd)
+            });
+        }
+    
+        // Gửi danh sách các khung giờ tới backend
+        fetch("/api/timeslots/save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(timeSlots)
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Lỗi khi lưu khung giờ", error));
+    }
+    
       </script>
 
 

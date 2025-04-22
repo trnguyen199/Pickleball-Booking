@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 // @RequestMapping("/booking")
-public class DanhChoChuSanController {
+public class DangKyChuSanController {
 
-    @GetMapping("/danhchochusan")
+    @GetMapping("/danhchochusan/dangky")
     public String getDanhSachSan() {
-        return "master/danhchochusan"; 
+        return "master/dangkychusan"; 
     }
 }

@@ -1,0 +1,29 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="master/head :: head"></head>
+<body>
+    <div th:replace="master/_layoutnavbar::layout-navbar"></div>
+      <th:block th:fragment="layout-content">
+        <main class="form-thanhtoan">
+          <div id="booking-info"></div>
+          <script>
+            const bookingData = JSON.parse(localStorage.getItem('bookingData'));
+            if (bookingData) {
+              const container = document.getElementById('booking-info');
+              let html = '<ul>';
+              bookingData.slots.forEach(slot => {
+                html += `<li>${slot.day} - ${slot.time}: ${slot.price.toLocaleString()} đ</li>`;
+              });
+              html += `</ul><p><strong>Tổng tiền: ${bookingData.total.toLocaleString()} đ</strong></p>`;
+              container.innerHTML = html;
+            } else {
+              document.getElementById('booking-info').innerText = 'Không có thông tin đặt sân!';
+            }
+          </script>
+          
+        </main>
+        <button id="confirm-payment" class="btn-confirm">Xác nhận đã thanh toán</button>
+      </th:block>
+    <div th:replace="master/_layoutfooter::layout-footer"></div>
+</body>
+</html>
