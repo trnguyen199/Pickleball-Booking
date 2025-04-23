@@ -24,6 +24,7 @@
               <p class="mb-6">Vui lòng đăng nhập để bắt đầu đặt sân</p>
 
               <form id="formAuthentication" class="mb-6" th:action="@{/login}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="mb-6">
                     <label for="username" class="form-label">Tên đăng nhập</label>
                     <input

@@ -2,6 +2,7 @@ package ut.edu.pickleball_booking.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +24,12 @@ public class User {
 
     @Column(nullable = false)
     private boolean agreedTerms;
+    private String fullName;
+    private String gender;
+    private LocalDate dob;
+    private String phone;
+    private String address;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -31,17 +38,8 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+    
 
-    // public User() {}
-
-    // public User(String username, String password, String email, boolean agreedTerms) {
-    //     this.username = username;
-    //     this.password = password;
-    //     this.email = email;
-    //     this.agreedTerms = agreedTerms;
-    // }
-
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -88,5 +86,44 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+    public String getFullName() {
+        return fullName;
+    }
+    
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
+    public String getGender() {
+        return gender;
+    }
+    
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    
+    public LocalDate getDob() {
+        return dob;
+    }
+    
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+    
+    public String getPhone() {
+        return phone;
+    }
+    
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    public String getAddress() {
+        return address;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

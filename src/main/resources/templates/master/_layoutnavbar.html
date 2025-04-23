@@ -82,16 +82,16 @@
       
          navbar button: End -->
          <li>
-          <a th:href="${loggedIn} ? '/profile' : '/login'" class="btn btn-primary">
-            <span class="tf-icons icon-base scaleX-n1-rtl me-md-1"
-                  th:classappend="${loggedIn} ? 'bx bx-user' : 'bx bx-log-in-circle'">
-            </span>
-            <span class="d-none d-md-block">
-              <span th:if="${loggedIn}" th:text="${username}">Tài khoản</span>
-              <span th:unless="${loggedIn}">Đăng nhập</span>
-            </span>
+          <a th:href="${session.loggedIn} ? '/profile' : '/login'" class="btn btn-primary">
+              <span class="tf-icons icon-base scaleX-n1-rtl me-md-1"
+                    th:classappend="${session.loggedIn} ? 'bx bx-user' : 'bx bx-log-in-circle'">
+              </span>
+              <span class="d-none d-md-block">
+                  <span th:if="${session.loggedIn}" th:text="${session.username}">Tài khoản</span>
+                  <span th:unless="${session.loggedIn}">Đăng nhập</span>
+              </span>
           </a>
-        </li>
+      </li>
       <!-- Toolbar: End -->
     </div>
 </nav>

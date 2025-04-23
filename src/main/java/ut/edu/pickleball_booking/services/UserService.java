@@ -3,6 +3,7 @@ package ut.edu.pickleball_booking.services;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ut.edu.pickleball_booking.dto.request.UserCreationRequest;
 import ut.edu.pickleball_booking.dto.request.UserUpdateRequest;
@@ -11,20 +12,19 @@ import ut.edu.pickleball_booking.entity.User;
 import ut.edu.pickleball_booking.repositories.RoleRepository;
 import ut.edu.pickleball_booking.repositories.UserRepository;
 
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    // private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        // this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(UserCreationRequest request) {
@@ -35,7 +35,7 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        // user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
         user.setAgreedTerms(request.isTerms());
 
         // Gán vai trò mặc định
@@ -49,14 +49,28 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // public User updateUser(String userId, UserUpdateRequest request) {
+    //     User user = userRepository.findById(Long.parseLong(userId))
+    //             .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+    //     user.setUsername(request.getUsername());
+    //     user.setEmail(request.getEmail()); // Ensure `email` exists in User entity
+    //     return userRepository.save(user);
+    // }
     public User updateUser(String userId, UserUpdateRequest request) {
+        // Tìm người dùng theo ID
         User user = userRepository.findById(Long.parseLong(userId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail()); // Ensure `email` exists in User entity
+            .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại"));
+    
+        // Cập nhật thông tin người dùng
+        user.setFullName(request.getFullName());
+        user.setGender(request.getGender());
+        user.setDob(request.getDob());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+    
         return userRepository.save(user);
     }
-
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
@@ -70,6 +84,10 @@ public class UserService {
         List<Role> roles = roleRepository.findByUsername(username);
         System.out.println("Roles fetched from database: " + roles);
         return roles;
+    }
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với tên đăng nhập: " + username));
     }
 }
 
