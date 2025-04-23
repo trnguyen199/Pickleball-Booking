@@ -7,14 +7,14 @@
         data-template="vertical-menu-template-free"
         xmlns:th="http://www.thymeleaf.org"
 >
-<head th:replace="master/head :: head"></head>
+<head th:replace="fragments/head :: head"></head>
 <body>
 <!-- Layout wrapper -->
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <!-- Layout container -->
             <!-- Navbar -->
-            <div th:replace="master/_layoutnavbar::layout-navbar"></div>
+            <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
             <!-- / Navbar -->
 
             <!-- Content wrapper -->
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <!-- Footer -->
-            <div th:replace="master/_layoutfooter::layout-footer"></div>
+            <div th:replace="fragments/_layoutfooter::layout-footer"></div>
             <!-- / Footer -->
             <!-- Content wrapper -->
         <!-- / Layout page -->

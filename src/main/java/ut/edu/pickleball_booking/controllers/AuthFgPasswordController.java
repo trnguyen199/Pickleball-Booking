@@ -8,6 +8,6 @@ public class AuthFgPasswordController {
 
     @GetMapping("/forgot-password")
     public String login() {
-        return "master/auth-fg-password"; 
+        return "auth/auth-fg-password"; 
     }
 }

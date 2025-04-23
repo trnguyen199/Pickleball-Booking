@@ -1,0 +1,27 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <main class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+
+        <h1>Quản lý Đánh giá Khách hàng</h1>
+        <section id="reviews">
+            <h2>Đánh giá từ khách hàng</h2>
+            <div class="review">
+                <div class="review-header">
+                    <span class="review-name">Nguyễn Văn A</span>
+                    <span class="review-date">18/04/2025</span>
+                </div>
+                <div class="review-content">
+                    <p class="review-text">Sân đẹp, sạch sẽ, nhân viên thân thiện. Tôi sẽ quay lại lần sau!</p>
+                    <div class="review-rating">⭐⭐⭐⭐⭐</div>
+                </div>
+                <button class="delete-btn">Xóa</button>
+            </div>
+        </section>
+    </main>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>

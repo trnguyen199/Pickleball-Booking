@@ -1,0 +1,84 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <main class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+        <div class="content-pa">
+            <h1>Thống kê & Báo cáo</h1>
+            <section id="revenue">
+                <h2>Doanh thu</h2>
+                <div class="stat">
+                    <span class="stat-title">Doanh thu theo ngày</span>
+                    <span class="stat-value">5.000.000 VND</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-title">Doanh thu theo tháng</span>
+                    <span class="stat-value">150.000.000 VND</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-title">Doanh thu theo năm</span>
+                    <span class="stat-value">1.800.000.000 VND</span>
+                </div>
+            </section>
+            <section id="charts">
+                <h2>Biểu đồ thống kê</h2>
+                <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+                </div>
+                <div class="chart-container">
+                <canvas id="bookingChart"></canvas>
+                </div>
+            </section>
+        </div>
+    </main>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+<script>
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sections = document.querySelectorAll('.section');
+
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        // Remove active from all
+        menuItems.forEach(i => i.classList.remove('active'));
+        sections.forEach(sec => sec.classList.remove('active'));
+
+        // Add active to current
+        item.classList.add('active');
+        const section = document.getElementById(item.getAttribute('data-section'));
+        section.classList.add('active');
+      });
+    });
+    // Biểu đồ doanh thu
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4','Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8','Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+        datasets: [{
+        label: 'Doanh thu (VND)',
+        data: [120000000, 130000000, 125000000, 135000000],
+        borderColor: '#3498db',
+        fill: false
+        }]
+    }
+    });
+
+    // Biểu đồ số lượt đặt sân
+    const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+    const bookingChart = new Chart(bookingCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4','Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8','Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+        datasets: [{
+        label: 'Số lượt đặt',
+        data: [3000, 3200, 3100, 3300],
+        backgroundColor: '#2ecc71'
+        }]
+    }
+    });
+
+</script>
+</html>

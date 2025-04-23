@@ -1,484 +1,103 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="master/head :: head"></head>
+<head th:replace="fragments/head :: head"></head>
 <body>
-    <div th:replace="master/_layoutnavbar::layout-navbar"></div>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
     <th:block th:fragment="layout-content">
         <div class="container-pa">
+            <div th:replace="fragments/_layoutsidebar::sidebar"></div>
 
-            <div class="sidebar-main">
-                <h3>Quản lý Sân</h3>
-                <div class="menu-item active" data-section="section1">1. Cập nhật thông tin</div>
-                <div class="menu-item" data-section="section2">2. Quản lý sân</div>
-                <div class="menu-item" data-section="section3">3. Khung giờ & Lịch đặt</div>
-                <div class="menu-item" data-section="section4">4. Đặt sân</div>
-                <div class="menu-item" data-section="section5">5. Thống kê báo cáo</div>
-                <div class="menu-item" data-section="section6">6. Đánh giá</div>
-                <div class="menu-item" data-section="section7">7. Rút tiền</div>
-                </div>
+            <th:block th:fragment="layout-courtmanage" >
             
-            <div class="content-pa">
-                <div class="section active" id="section1">
-                    <h1>Cập nhật thông tin chủ sân</h1>
-                    <ul>
-                        <li th:each="role : ${roles}" th:text="${role.name}"></li>
-                    </ul> 
-                    <!-- Thông tin cá nhân -->
-                    <section id="personal-info">
-                    <h2>Thông tin cá nhân</h2>
-                    <form class="form-input" id="info-form" th:action="@{/update-owner}" method="post">
-                        <label for="fullName">Họ và tên:</label>
-                        <input type="text" id="fullName" name="fullName" value="${user.username}" required>
-                    
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="${owner.email}" required>
-                    
-                        <label for="phone">Số điện thoại:</label>
-                        <input type="tel" id="phone" name="phone" value="${owner.phone}" required>
-                    
-                        <label for="address">Địa chỉ:</label>
-                        <input type="text" id="address" name="address" value="${owner.address}" required>
-                    
-                        <button type="submit">Cập nhật thông tin</button>
-                    </form>
-                    
-                    </section>
-                
-                    <!-- Thông tin sân 
-                    {% comment %} <section id="court-info">
-                    <h2>Thông tin sân</h2>
-                    <form id="court-form" action="/update-court" method="post">
-                        <label for="court-name">Tên sân:</label>
-                        <input type="text" id="court-name" name="court-name" value="Sân Quận 1" required>
-                
-                        <label for="court-location">Vị trí:</label>
-                        <input type="text" id="court-location" name="court-location" value="Quận 1, TP.HCM" required>
-                
-                        <label for="court-phone">Số điện thoại sân:</label>
-                        <input type="tel" id="court-phone" name="court-phone" value="0907654321" required>
-                        <input type="hidden" name="ownerId" value="1">
-
-                        <button type="submit">Cập nhật thông tin sân</button>
-                    </form>
-                    </section> {% endcomment %}-->
-                </div>
-            
-                <div class="section" id="section2">
-                    <h1>Quản lý sân</h1>
-    
-                    <!-- Danh sách sân -->
-                    <section id="court-list">
-                        <h2>Danh sách sân</h2>
-                        <table>
-                        <thead>
-                            <tr>
-                            <th>Tên sân </th>
-                            <th>Vị trí</th>
-                            <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="court-table-body">
-                            <!-- Dữ liệu sân sẽ được thêm vào đây -->
-                        </tbody>
-                        </table>
-                    </section>
-                
-                    <!-- Tạo mới sân -->
-                    <section id="create-court">
-                        <h2>Tạo mới sân</h2>
-                        <form class="form-input" id="create-court-form">
-                        <label class="label-set" for="court-name">Tên sân:</label>
-                        <input type="text" id="court-name" name="court-name" required>
-                
-                        <label class="label-set" for="court-description">Mô tả:</label>
-                        <textarea id="court-description" name="court-description" required></textarea>
-                
-                        <label class="label-set" for="court-location">Vị trí:</label>
-                        <input type="text" id="court-location" name="court-location" required>
-                
-                        <label class="label-set" for="court-image">Ảnh sân:</label>
-                        <input type="file" id="court-image" name="court-image" accept="image/*" required>
-                
-                        <button type="submit">Tạo sân</button>
-                        </form>
-                    </section>
-                </div>
-            
-                <div class="section" id="section3">
-                    <h1>Quản lý khung giờ sân</h1>
-
-                    <div class="time-settings">
-                      <label class="label-set" for="open-time">Giờ mở cửa:</label>
-                      <input type="time" id="open-time" value="06:00">
-                  
-                      <label class="label-set" for="close-time">Giờ đóng cửa:</label>
-                      <input type="time" id="close-time" value="22:00">
-                  
-                      <label class="label-set" for="duration">Thời lượng mỗi khung giờ (phút):</label>
-                      <select id="duration">
-                        <option value="30">30 phút</option>
-                        <option value="60" selected>60 phút</option>
-                        <option value="90">90 phút</option>
-                        <option value="120">120 phút</option>
-                      </select>
-                  
-                      <button class="generate-btn" onclick="generateSlots()">Tạo khung giờ</button>
-                  
-                      <div class="slot-list" id="slot-list">
-                        <!-- Danh sách khung giờ sẽ hiện ở đây -->
-                      </div>
-                    </div>
-                </div>
-            
-                <div class="section" id="section4">
-                    <section id="booking-management">
-                        <h1>Quản lý đặt sân</h1>
-                      
-                        <label class="label-set" for="filter-date">Chọn ngày:</label>
-                        <input type="date" id="filter-date" name="filter-date" onchange="filterBookings()">
-                      
-                        <table id="booking-table">
-                          <thead>
-                            <tr>
-                              <th>Tên khách hàng</th>
-                              <th>Ngày giờ</th>
-                              <th>Trạng thái</th>
-                              <th>Hành động</th>
-                            </tr>
-                          </thead>
-                          <tbody id="booking-table-body">
-                            <!-- Các lượt đặt sân sẽ được hiển thị ở đây -->
-                          </tbody>
-                        </table>
-                      </section>
-                </div>
-            
-                <div class="section" id="section5">
-                    <h1>Thống kê & Báo cáo</h1>
-                
-                    <!-- Doanh thu -->
-                    <section id="revenue">
-                        <h2>Doanh thu</h2>
-                        <div class="stat">
-                        <span class="stat-title">Doanh thu theo ngày</span>
-                        <span class="stat-value">5.000.000 VND</span>
-                        </div>
-                        <div class="stat">
-                        <span class="stat-title">Doanh thu theo tháng</span>
-                        <span class="stat-value">150.000.000 VND</span>
-                        </div>
-                        <div class="stat">
-                        <span class="stat-title">Doanh thu theo năm</span>
-                        <span class="stat-value">1.800.000.000 VND</span>
-                        </div>
-                    </section>
-                
-                    <!-- Số lượt đặt sân -->
-                    <section id="bookings">
-                        <h2>Số lượt đặt sân</h2>
-                        <div class="stat">
-                        <span class="stat-title">Lượt đặt theo ngày</span>
-                        <span class="stat-value">120 lượt</span>
-                        </div>
-                        <div class="stat">
-                        <span class="stat-title">Lượt đặt theo tháng</span>
-                        <span class="stat-value">3.600 lượt</span>
-                        </div>
-                        <div class="stat">
-                        <span class="stat-title">Lượt đặt theo năm</span>
-                        <span class="stat-value">43.200 lượt</span>
-                        </div>
-                    </section>
-                
-                    <!-- Biểu đồ -->
-                    <section id="charts">
-                        <h2>Biểu đồ thống kê</h2>
-                        <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                        <canvas id="bookingChart"></canvas>
-                        </div>
-                    </section>
-                </div>
-            
-                <div class="section" id="section6">
-                    <h1>Quản lý Đánh giá Khách hàng</h1>
-                
-                    <!-- Danh sách đánh giá -->
-                    <section id="reviews">
-                        <h2>Đánh giá từ khách hàng</h2>
-                        <div class="review">
-                        <div class="review-header">
-                            <span class="review-name">Nguyễn Văn A</span>
-                            <span class="review-date">18/04/2025</span>
-                        </div>
-                        <div class="review-content">
-                            <p class="review-text">Sân đẹp, sạch sẽ, nhân viên thân thiện. Tôi sẽ quay lại lần sau!</p>
-                            <div class="review-rating">⭐⭐⭐⭐⭐</div>
-                        </div>
-                        <button class="delete-btn">Xóa</button>
-                        </div>
-                        <!-- Thêm các đánh giá khác ở đây -->
-                    </section>
-                
-                    <!-- Phản hồi đánh giá -->
-                    <section id="response">
-                        <h2>Phản hồi của bạn</h2>
-                        <form class="form-input" action="/gui-phan-hoi" method="POST">
-                        <label for="review-id">Chọn đánh giá:</label>
-                        <select id="review-id" name="review-id" required>
-                            <option value="1">Nguyễn Văn A</option>
-                            <!-- Thêm các lựa chọn khác ở đây -->
-                        </select>
-                
-                        <label for="response-text">Nội dung phản hồi:</label>
-                        <textarea id="response-text" name="response-text" rows="4" required></textarea>
-                
-                        <button type="submit">Gửi phản hồi</button>
-                        </form>
-                    </section>
-                </div>
-            
-                <div class="section" id="section7">
-                    <h1>Quản lý Rút Tiền</h1>
-                    <!-- Thông tin tài khoản ngân hàng -->
-                    <section id="account-info">
-                        <h2>Thông tin tài khoản ngân hàng</h2>
-                        <form class="form-input" action="/cap-nhat-thong-tin" method="POST">
-                        <label for="account-name">Tên chủ tài khoản:</label>
-                        <input type="text" id="account-name" name="account-name" required>
-                
-                        <label for="account-number">Số tài khoản:</label>
-                        <input type="text" id="account-number" name="account-number" required>
-                
-                        <label for="bank-name">Ngân hàng:</label>
-                        <input type="text" id="bank-name" name="bank-name" required>
-                
-                        <label for="branch">Chi nhánh:</label>
-                        <input type="text" id="branch" name="branch" required>
-                
-                        <button type="submit">Cập nhật thông tin</button>
-                        </form>
-                    </section>
-                
-                    <!-- Lịch sử giao dịch rút tiền -->
-                    <section id="transaction-history">
-                        <h2>Lịch sử giao dịch</h2>
-                        <table>
-                        <thead>
-                            <tr>
-                            <th>Ngày yêu cầu</th>
-                            <th>Số tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Ghi chú</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dữ liệu sẽ được chèn động ở đây -->
-                        </tbody>
-                        </table>
-                    </section>
-                
-                    <!-- Yêu cầu rút tiền mới -->
-                    <section id="withdrawal-request">
-                        <h2>Yêu cầu rút tiền mới</h2>
-                        <form action="/yeu-cau-rut-tien" method="POST">
-                        <label for="amount">Số tiền muốn rút:</label>
-                        <input type="number" id="amount" name="amount" required>
-                
-                        <label for="password">Mật khẩu xác nhận:</label>
-                        <input type="password" id="password" name="password" required>
-                
-                        <button type="submit">Gửi yêu cầu</button>
-                        </form>
-                    </section>
-                </div>
-            </div>
+            </th:block>
         </div>
         
     </th:block>
-    <div th:replace="master/_layoutfooter::layout-footer"></div>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
     <script>
-        const menuItems = document.querySelectorAll('.menu-item');
-        const sections = document.querySelectorAll('.section');
-    
-        menuItems.forEach(item => {
-          item.addEventListener('click', () => {
-            // Remove active from all
-            menuItems.forEach(i => i.classList.remove('active'));
-            sections.forEach(sec => sec.classList.remove('active'));
-    
-            // Add active to current
-            item.classList.add('active');
-            const section = document.getElementById(item.getAttribute('data-section'));
-            section.classList.add('active');
-          });
-        });
-        // Biểu đồ doanh thu
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        const revenueChart = new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4','Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8','Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
-            datasets: [{
-            label: 'Doanh thu (VND)',
-            data: [120000000, 130000000, 125000000, 135000000],
-            borderColor: '#3498db',
-            fill: false
-            }]
-        }
-        });
-
-        // Biểu đồ số lượt đặt sân
-        const bookingCtx = document.getElementById('bookingChart').getContext('2d');
-        const bookingChart = new Chart(bookingCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4','Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8','Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
-            datasets: [{
-            label: 'Số lượt đặt',
-            data: [3000, 3200, 3100, 3300],
-            backgroundColor: '#2ecc71'
-            }]
-        }
-        });
-
+       
 
 
        //----------------------quản lý sân-------------------
         // Dữ liệu mẫu về các sân
-        const courts = [
-        { name: "Sân bóng ABC", location: "Quận 1, TP.HCM", description: "Sân bóng đá mini", image: "image1.jpg" },
-        { name: "Sân bóng XYZ", location: "Quận 2, TP.HCM", description: "Sân bóng đá cỏ nhân tạo", image: "image2.jpg" }
-        ];
-
-        // Hàm hiển thị danh sách sân
-        function displayCourts() {
-        const tbody = document.getElementById("court-table-body");
-        tbody.innerHTML = ""; // Xóa nội dung hiện tại
-
-        courts.forEach((court, index) => {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-            <td>${court.name}</td>
-            <td>${court.location}</td>
-            <td>
-                <button onclick="viewCourt(${index})">Xem</button>
-                <button onclick="editCourt(${index})">Sửa</button>
-                <button onclick="deleteCourt(${index})">Xóa</button>
-            </td>
-            `;
-
-            tbody.appendChild(row);
-        });
-        }
-
-        // Hàm xem thông tin sân
-        function viewCourt(index) {
-        const court = courts[index];
-        alert(`Tên sân: ${court.name}\nVị trí: ${court.location}\nMô tả: ${court.description}`);
-        }
-
-        // Hàm chỉnh sửa thông tin sân
-        function editCourt(index) {
-        const court = courts[index];
-        const newName = prompt("Nhập tên sân mới:", court.name);
-        const newLocation = prompt("Nhập vị trí mới:", court.location);
-        const newDescription = prompt("Nhập mô tả mới:", court.description);
-
-        if (newName && newLocation && newDescription) {
-            court.name = newName;
-            court.location = newLocation;
-            court.description = newDescription;
-            displayCourts();
-        }
-        }
-
-        // Hàm xóa sân
-        function deleteCourt(index) {
-        if (confirm("Bạn có chắc chắn muốn xóa sân này?")) {
-            courts.splice(index, 1);
-            displayCourts();
-        }
-        }
-
-        // Hàm tạo mới sân
-        document.getElementById("create-court-form").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const name = document.getElementById("court-name").value;
-        const description = document.getElementById("court-description").value;
-        const location = document.getElementById("court-location").value;
-        const image = document.getElementById("court-image").files[0]?.name;
-
-        // Kiểm tra tính hợp lệ của dữ liệu nhập vào
-        if (!name || !description || !location || !image) {
-            alert("Vui lòng nhập đầy đủ thông tin sân.");
-            return;
-        }
-
-        // Thêm sân mới vào danh sách
-        courts.push({ name, description, location, image });
-        displayCourts();
-        alert("Tạo sân thành công!");
-        });
+        // const courts = [
+        // { name: "Sân bóng ABC", location: "Quận 1, TP.HCM", description: "Sân bóng đá mini", image: "image1.jpg" },
+        // { name: "Sân bóng XYZ", location: "Quận 2, TP.HCM", description: "Sân bóng đá cỏ nhân tạo", image: "image2.jpg" }
+        // ];
+        //
+        // // Hàm hiển thị danh sách sân
+        // function displayCourts() {
+        // const tbody = document.getElementById("court-table-body");
+        // tbody.innerHTML = ""; // Xóa nội dung hiện tại
+        //
+        // courts.forEach((court, index) => {
+        //     const row = document.createElement("tr");
+        //
+        //     row.innerHTML = `
+        //     <td>${court.name}</td>
+        //     <td>${court.location}</td>
+        //     <td>
+        //         <button onclick="viewCourt(${index})">Xem</button>
+        //         <button onclick="editCourt(${index})">Sửa</button>
+        //         <button onclick="deleteCourt(${index})">Xóa</button>
+        //     </td>
+        //     `;
+        //
+        //     tbody.appendChild(row);
+        // });
+        // }
+        //
+        // // Hàm xem thông tin sân
+        // function viewCourt(index) {
+        // const court = courts[index];
+        // alert(`Tên sân: ${court.name}\nVị trí: ${court.location}\nMô tả: ${court.description}`);
+        // }
+        //
+        // // Hàm chỉnh sửa thông tin sân
+        // function editCourt(index) {
+        // const court = courts[index];
+        // const newName = prompt("Nhập tên sân mới:", court.name);
+        // const newLocation = prompt("Nhập vị trí mới:", court.location);
+        // const newDescription = prompt("Nhập mô tả mới:", court.description);
+        //
+        // if (newName && newLocation && newDescription) {
+        //     court.name = newName;
+        //     court.location = newLocation;
+        //     court.description = newDescription;
+        //     displayCourts();
+        // }
+        // }
+        //
+        // // Hàm xóa sân
+        // function deleteCourt(index) {
+        // if (confirm("Bạn có chắc chắn muốn xóa sân này?")) {
+        //     courts.splice(index, 1);
+        //     displayCourts();
+        // }
+        // }
+        //
+        // // Hàm tạo mới sân
+        // document.getElementById("create-court-form").addEventListener("submit", function(event) {
+        // event.preventDefault();
+        //
+        // const name = document.getElementById("court-name").value;
+        // const description = document.getElementById("court-description").value;
+        // const location = document.getElementById("court-location").value;
+        // const image = document.getElementById("court-image").files[0]?.name;
+        //
+        // // Kiểm tra tính hợp lệ của dữ liệu nhập vào
+        // if (!name || !description || !location || !image) {
+        //     alert("Vui lòng nhập đầy đủ thông tin sân.");
+        //     return;
+        // }
+        //
+        // // Thêm sân mới vào danh sách
+        // courts.push({ name, description, location, image });
+        // displayCourts();
+        // alert("Tạo sân thành công!");
+        // });
     // -----------------------------------------------------quản lý khung giờ -------------------------------
-    function generateSlots() {
-        const openTime = document.getElementById("open-time").value;
-        const closeTime = document.getElementById("close-time").value;
-        const duration = parseInt(document.getElementById("duration").value);
-        const list = document.getElementById("slot-list");
-    
-        list.innerHTML = "";
-    
-        let [oh, om] = openTime.split(":").map(Number);
-        let [ch, cm] = closeTime.split(":").map(Number);
-    
-        let start = new Date();
-        start.setHours(oh, om, 0, 0);
-    
-        let end = new Date();
-        end.setHours(ch, cm, 0, 0);
-    
-        const timeSlots = [];
-    
-        while (start < end) {
-            let slotStart = new Date(start);
-            start.setMinutes(start.getMinutes() + duration);
-            if (start > end) break;
-            let slotEnd = new Date(start);
-    
-            const format = (d) => d.toTimeString().slice(0, 5);
-            const div = document.createElement("div");
-            div.className = "slot-item";
-            div.innerHTML = `
-                ${format(slotStart)} - ${format(slotEnd)}
-                <button onclick="this.parentElement.remove()">Xoá</button>
-            `;
-            list.appendChild(div);
-    
-            // Tạo các đối tượng TimeSlot
-            timeSlots.push({
-                startTime: format(slotStart),
-                endTime: format(slotEnd)
-            });
-        }
-    
-        // Gửi danh sách các khung giờ tới backend
-        fetch("/api/timeslots/save", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(timeSlots)
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error("Lỗi khi lưu khung giờ", error));
-    }
-    
+   
       </script>
 
 

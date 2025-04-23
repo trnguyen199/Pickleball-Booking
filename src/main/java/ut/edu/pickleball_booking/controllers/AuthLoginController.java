@@ -22,14 +22,14 @@ public class AuthLoginController {
 
     @GetMapping("/login")
     public String loginForm() {
-        return "master/auth-login"; // Return login page view
+        return "auth/auth-login"; // Return login page view
     }
 
     // @GetMapping("/")
     // public String home(Model model, Principal principal) {
     //     boolean loggedIn = (principal != null); // Kiểm tra xem người dùng đã đăng nhập chưa
     //     model.addAttribute("loggedIn", loggedIn); // Thêm vào model
-    //     return "master/home"; 
+    //     return "auth/home"; 
     // }
 
     // @PostMapping("/login")
@@ -45,11 +45,11 @@ public class AuthLoginController {
     //             return "redirect:/trangchu"; // Chuyển hướng đến trang chủ
     //         } else {
     //             model.addAttribute("error", "Không tìm thấy thông tin người dùng.");
-    //             return "master/auth-login"; // Quay lại trang đăng nhập
+    //             return "auth/auth-login"; // Quay lại trang đăng nhập
     //         }
     //     } else {
     //         model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
-    //         return "master/auth-login"; // Quay lại trang đăng nhập
+    //         return "auth/auth-login"; // Quay lại trang đăng nhập
     //     }
     // }       
     @PostMapping("/login")
@@ -68,11 +68,11 @@ public class AuthLoginController {
             return "redirect:/trangchu"; // Chuyển hướng đến trang chủ
         } else {
             model.addAttribute("error", "Không tìm thấy thông tin người dùng.");
-            return "master/auth-login"; // Quay lại trang đăng nhập
+            return "auth/auth-login"; // Quay lại trang đăng nhập
         }
     } else {
         model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
-        return "master/auth-login"; // Quay lại trang đăng nhập
+        return "auth/auth-login"; // Quay lại trang đăng nhập
     }
 }
 }

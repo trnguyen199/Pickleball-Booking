@@ -22,7 +22,7 @@ public class AuthRegisterController {
     }
     @GetMapping("/register")
     public String registerForm() {
-        return "master/auth-register"; // Trả về file HTML trong thư mục templates/master
+        return "auth/auth-register"; // Trả về file HTML trong thư mục templates/auth
     }
     @PostMapping("/register-user")
     public String registerUser(@ModelAttribute UserCreationRequest request, Model model) {
@@ -32,7 +32,7 @@ public class AuthRegisterController {
             return "redirect:/login"; // Chuyển hướng đến trang đăng nhập
         } catch (Exception e) {
             model.addAttribute("error", "Đăng ký thất bại: " + e.getMessage());
-            return "master/auth-register"; // Quay lại trang đăng ký nếu có lỗi
+            return "auth/auth-register"; // Quay lại trang đăng ký nếu có lỗi
         }
     }
 }

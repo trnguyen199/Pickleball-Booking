@@ -49,13 +49,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // public User updateUser(String userId, UserUpdateRequest request) {
-    //     User user = userRepository.findById(Long.parseLong(userId))
-    //             .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-    //     user.setUsername(request.getUsername());
-    //     user.setEmail(request.getEmail()); // Ensure `email` exists in User entity
-    //     return userRepository.save(user);
-    // }
     public User updateUser(String userId, UserUpdateRequest request) {
         // Tìm người dùng theo ID
         User user = userRepository.findById(Long.parseLong(userId))
