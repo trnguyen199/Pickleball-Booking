@@ -1,0 +1,105 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+        <div class="container-pa">
+            <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+
+            <th:block th:fragment="layout-courtmanage" >
+            
+            </th:block>
+        </div>
+        
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+    <script>
+       
+
+
+       //----------------------quản lý sân-------------------
+        // Dữ liệu mẫu về các sân
+        // const courts = [
+        // { name: "Sân bóng ABC", location: "Quận 1, TP.HCM", description: "Sân bóng đá mini", image: "image1.jpg" },
+        // { name: "Sân bóng XYZ", location: "Quận 2, TP.HCM", description: "Sân bóng đá cỏ nhân tạo", image: "image2.jpg" }
+        // ];
+        //
+        // // Hàm hiển thị danh sách sân
+        // function displayCourts() {
+        // const tbody = document.getElementById("court-table-body");
+        // tbody.innerHTML = ""; // Xóa nội dung hiện tại
+        //
+        // courts.forEach((court, index) => {
+        //     const row = document.createElement("tr");
+        //
+        //     row.innerHTML = `
+        //     <td>${court.name}</td>
+        //     <td>${court.location}</td>
+        //     <td>
+        //         <button onclick="viewCourt(${index})">Xem</button>
+        //         <button onclick="editCourt(${index})">Sửa</button>
+        //         <button onclick="deleteCourt(${index})">Xóa</button>
+        //     </td>
+        //     `;
+        //
+        //     tbody.appendChild(row);
+        // });
+        // }
+        //
+        // // Hàm xem thông tin sân
+        // function viewCourt(index) {
+        // const court = courts[index];
+        // alert(`Tên sân: ${court.name}\nVị trí: ${court.location}\nMô tả: ${court.description}`);
+        // }
+        //
+        // // Hàm chỉnh sửa thông tin sân
+        // function editCourt(index) {
+        // const court = courts[index];
+        // const newName = prompt("Nhập tên sân mới:", court.name);
+        // const newLocation = prompt("Nhập vị trí mới:", court.location);
+        // const newDescription = prompt("Nhập mô tả mới:", court.description);
+        //
+        // if (newName && newLocation && newDescription) {
+        //     court.name = newName;
+        //     court.location = newLocation;
+        //     court.description = newDescription;
+        //     displayCourts();
+        // }
+        // }
+        //
+        // // Hàm xóa sân
+        // function deleteCourt(index) {
+        // if (confirm("Bạn có chắc chắn muốn xóa sân này?")) {
+        //     courts.splice(index, 1);
+        //     displayCourts();
+        // }
+        // }
+        //
+        // // Hàm tạo mới sân
+        // document.getElementById("create-court-form").addEventListener("submit", function(event) {
+        // event.preventDefault();
+        //
+        // const name = document.getElementById("court-name").value;
+        // const description = document.getElementById("court-description").value;
+        // const location = document.getElementById("court-location").value;
+        // const image = document.getElementById("court-image").files[0]?.name;
+        //
+        // // Kiểm tra tính hợp lệ của dữ liệu nhập vào
+        // if (!name || !description || !location || !image) {
+        //     alert("Vui lòng nhập đầy đủ thông tin sân.");
+        //     return;
+        // }
+        //
+        // // Thêm sân mới vào danh sách
+        // courts.push({ name, description, location, image });
+        // displayCourts();
+        // alert("Tạo sân thành công!");
+        // });
+    // -----------------------------------------------------quản lý khung giờ -------------------------------
+   
+      </script>
+
+
+</body>
+</html>

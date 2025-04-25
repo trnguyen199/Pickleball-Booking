@@ -1,0 +1,66 @@
+package ut.edu.pickleball_booking.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ut.edu.pickleball_booking.entity.Court;
+import ut.edu.pickleball_booking.services.CourtService;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/courts")
+public class CourtController {
+
+    @Autowired
+    private CourtService courtService;
+
+    @GetMapping
+    public String getAllCourts(Model model) {
+        List<Court> courts = courtService.getAllCourts();
+        model.addAttribute("courts", courts);
+        return "master/danhchochusan"; // Tên template
+    }
+
+    @PostMapping("/courts/create")
+    public String createCourt(@RequestParam("name") String name,
+                            @RequestParam("description") String description,
+                            @RequestParam("location") String location,
+                            @RequestParam("image") MultipartFile image,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            // Lưu ảnh sân (nếu cần)
+            String imageUrl = null;
+            if (!image.isEmpty()) {
+                imageUrl = image.getOriginalFilename(); // Lưu tên file
+                // Bạn có thể thêm logic lưu file vào thư mục cụ thể
+            }
+
+            // Tạo đối tượng Court
+            Court court = new Court();
+            court.setName(name);
+            court.setDescription(description);
+            court.setLocation(location);
+            court.setImageUrl(imageUrl);
+
+            // Lưu đối tượng Court vào cơ sở dữ liệu
+            courtService.saveCourt(court);
+
+            // Thêm thông báo thành công
+            redirectAttributes.addFlashAttribute("success", "Tạo sân thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tạo sân.");
+        }
+
+        return "redirect:/courts"; // Chuyển hướng về trang danh sách sân
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteCourt(@PathVariable Long id) {
+        courtService.deleteCourt(id);
+        return "redirect:/courts";
+    }
+}ơ

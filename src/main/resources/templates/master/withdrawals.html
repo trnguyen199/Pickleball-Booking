@@ -1,0 +1,32 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <main class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+        <div class="content-pa">
+            <h1>Quản lý Rút Tiền</h1>
+            <section id="account-info">
+                <h2>Thông tin tài khoản ngân hàng</h2>
+                <form action="/cap-nhat-thong-tin" method="POST">
+                    <label for="account-name">Tên chủ tài khoản:</label>
+                    <input type="text" id="account-name" name="account-name" required>
+
+                    <label for="account-number">Số tài khoản:</label>
+                    <input type="text" id="account-number" name="account-number" required>
+
+                    <label for="bank-name">Ngân hàng:</label>
+                    <input type="text" id="bank-name" name="bank-name" required>
+
+                    <label for="branch">Chi nhánh:</label>
+                    <input type="text" id="branch" name="branch" required>
+
+                    <button type="submit">Cập nhật thông tin</button>
+                </form>
+            </section>
+        </div>
+    </main>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>

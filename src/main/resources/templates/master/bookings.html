@@ -1,0 +1,31 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <main class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+        <div class="content-pa">
+
+            <h1>Quản lý đặt sân</h1>
+            <label for="filter-date">Chọn ngày:</label>
+            <input type="date" id="filter-date" name="filter-date" onchange="filterBookings()">
+
+            <table id="booking-table">
+                <thead>
+                    <tr>
+                        <th>Tên khách hàng</th>
+                        <th>Ngày giờ</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="booking-table-body">
+                    <!-- Các lượt đặt sân sẽ được hiển thị ở đây -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>

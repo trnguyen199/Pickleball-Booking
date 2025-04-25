@@ -1,0 +1,85 @@
+
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+      <!-- Content -->
+
+    <div class="container-xxl">
+        <div class="authentication-wrapper authentication-basic container-p-y">
+          <div class="authentication-inner">
+            <!-- Register Card -->
+            <div class="card px-sm-6 px-0">
+              <div class="card-body">
+                <!-- Logo -->
+                <div class="app-brand justify-content-center mb-6">
+                  <a href="index.html" class="app-brand-link gap-2">
+                    <span class="app-brand-text demo text-heading fw-bold">Đăng ký</span>
+                  </a>
+                </div>
+                <!-- /Logo -->
+                <h4 class="mb-1">Đặt sân PickleBall</h4>
+                <p class="mb-6">Làm cho việc đặt sân trở nên tiện lợi hơn</p>
+  
+                <form id="formAuthentication" class="mb-6" method="post" th:action="@{/auth/register-user}">
+                  <div class="mb-6">
+                    <label for="username" class="form-label">Tên đăng nhập</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="username"
+                      name="username"
+                      placeholder="Nhập tên đăng nhập"
+                      autofocus />
+                  </div>
+                  <div class="mb-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="email" name="email" placeholder="Nhập email của bạn" />
+                  </div>
+                  <div class="form-password-toggle">
+                    <label class="form-label" for="password">Mật khẩu</label>
+                    <div class="input-group input-group-merge">
+                      <input
+                        type="password"
+                        id="password"
+                        class="form-control"
+                        name="password"
+                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                        aria-describedby="password" />
+                      <!-- <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span> -->
+                    </div>
+                  </div>
+                  <div class="my-7">
+                    <div class="form-check mb-0">
+                      <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" />
+                      <label class="form-check-label" for="terms-conditions">
+                        Tôi đồng ý với
+                        <a href="javascript:void(0);">chính sách & điều khoản</a>
+                      </label>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary d-grid w-100">Đăng ký</button>
+                  <p th:if="${error}" style="color:red;">[[${error}]]</p>
+                  <p th:if="${success}" style="color:green;">[[${success}]]</p>
+                </form>
+  
+                <p class="text-center">
+                  <span>Bạn đã có tài khoản?</span>
+                  <a href="/login">
+                    <span>Đăng nhập ngay</span>
+                  </a>
+                </p>
+              </div>
+            </div>
+            <!-- Register Card -->
+          </div>
+        </div>
+      </div>
+  
+      <!-- / Content -->
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>

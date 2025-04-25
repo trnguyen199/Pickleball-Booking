@@ -1,0 +1,80 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+        <main class="container">
+            <section class="terms">
+              <h2>Điều khoản sử dụng</h2>
+        
+              <p>Khi sử dụng hệ thống PBS, bạn đồng ý với các điều khoản sau:</p>
+        
+              <h3>1. Tài khoản người dùng</h3>
+              <p>
+                Người dùng cần đăng ký tài khoản với thông tin chính xác. Bạn có trách nhiệm bảo mật thông tin tài khoản của mình.
+              </p>
+        
+              <h3>2. Quy định đặt sân</h3>
+              <ul>
+                <li>Đặt sân trước ít nhất 30 phút trước giờ chơi.</li>
+                <li>Hủy sân cần thực hiện trước giờ chơi tối thiểu 1 giờ để được hoàn tiền (nếu có).</li>
+                <li>Không spam hay sử dụng hệ thống sai mục đích.</li>
+              </ul>
+        
+              <h3>3. Thanh toán và hoàn tiền</h3>
+              <p>
+                Hệ thống hỗ trợ thanh toán qua các cổng thanh toán điện tử. Chính sách hoàn tiền sẽ được thực hiện theo quy định từng sân và thời điểm hủy đặt.
+              </p>
+        
+              <h3>4. Bảo mật thông tin</h3>
+              <p>
+                PBS cam kết bảo mật thông tin cá nhân của người dùng và không chia sẻ với bên thứ ba nếu không có sự đồng ý.
+              </p>
+        
+              <h3>5. Quyền thay đổi điều khoản</h3>
+              <p>
+                Chúng tôi có quyền thay đổi điều khoản bất kỳ lúc nào và sẽ thông báo trước khi áp dụng.
+              </p>
+        
+              <p class="note"><strong>Ngày cập nhật cuối:</strong> 20/04/2025</p>
+              <h3>6. Trách nhiệm của người dùng</h3>
+            <p>
+            Người dùng cần tuân thủ các quy định pháp luật khi sử dụng nền tảng. Mọi hành vi gian lận, lạm dụng, phá hoại hệ thống hoặc gây ảnh hưởng đến trải nghiệm của người dùng khác đều bị nghiêm cấm.
+            </p>
+
+            <h3>7. Trách nhiệm của nhà phát triển</h3>
+            <p>
+            PBS sẽ cố gắng duy trì hệ thống hoạt động ổn định, bảo trì định kỳ và hỗ trợ kỹ thuật khi cần thiết. Tuy nhiên, chúng tôi không chịu trách nhiệm với các sự cố khách quan ngoài tầm kiểm soát như thiên tai, mất điện diện rộng, tấn công mạng, v.v.
+            </p>
+
+            <h3>8. Quy định về hành vi và nội dung cấm</h3>
+            <ul>
+            <li>Không sử dụng ngôn ngữ thù ghét, phân biệt chủng tộc, xúc phạm cá nhân/tổ chức khác trên nền tảng.</li>
+            <li>Không đăng tải nội dung vi phạm pháp luật Việt Nam.</li>
+            <li>Không giả mạo người khác hoặc tạo tài khoản ảo nhằm mục đích lừa đảo.</li>
+            </ul>
+
+            <h3>9. Quy định dành cho chủ sân</h3>
+            <p>
+            Các chủ sân phải đảm bảo cập nhật chính xác lịch hoạt động, giá sân, quy định nội bộ và thông tin liên hệ. PBS có quyền tạm khóa quyền truy cập của chủ sân nếu phát hiện thông tin sai lệch hoặc có phản ánh từ người dùng.
+            </p>
+
+            <h3>10. Giới hạn trách nhiệm pháp lý</h3>
+            <p>
+            PBS không chịu trách nhiệm pháp lý đối với các tranh chấp phát sinh giữa người dùng và chủ sân. Mọi vấn đề cần được giải quyết theo thỏa thuận giữa hai bên và theo quy định pháp luật Việt Nam.
+            </p>
+
+            <h3>11. Liên hệ hỗ trợ</h3>
+            <p>
+            Mọi thắc mắc, khiếu nại hoặc góp ý xin gửi về:  
+            📧 Email: <a href="mailto:support@pbs.vn">support@pbs.vn</a><br>
+            ☎️ Hotline: 1900 123 456 (8:00 - 20:00, tất cả các ngày)
+            </p>
+            </section>
+          </main>
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+
+</body>
+</html>
