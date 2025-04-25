@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class CourtService {
 
+    private final CourtRepository courtRepository;
+
     @Autowired
-    private CourtRepository courtRepository;
+    public CourtService(CourtRepository courtRepository) {
+        this.courtRepository = courtRepository;
+    }
 
     public List<Court> getAllCourts() {
         return courtRepository.findAll();
@@ -23,5 +27,9 @@ public class CourtService {
 
     public void deleteCourt(Long id) {
         courtRepository.deleteById(id);
+    }
+
+    public List<Court> getCourtsByOwnerId(Long ownerId) {
+        return courtRepository.findByCourtOwner_Id(ownerId); // sửa theo quan hệ @ManyToOne
     }
 }

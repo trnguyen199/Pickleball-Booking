@@ -7,7 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import ut.edu.pickleball_booking.dto.request.UserUpdateRequest;
 import ut.edu.pickleball_booking.entity.User;
 import ut.edu.pickleball_booking.services.UserService;
@@ -40,26 +42,48 @@ public class ProfileController {
         } else {
             model.addAttribute("error", "Không tìm thấy thông tin người dùng.");
         }
-        return "master/profile";
+        return "public/profile";
     }
 
     // Các phương thức khác nếu cần thiết
     @PostMapping("/profile/update")
-    public String updateProfile(@ModelAttribute User updateUser, Model model) {
-        // Tạo một đối tượng UserUpdateRequest từ User
-        UserUpdateRequest request = new UserUpdateRequest();
-        request.setFullName(updateUser.getFullName());
-        request.setGender(updateUser.getGender());
-        request.setDob(updateUser.getDob());
-        request.setEmail(updateUser.getEmail());
-        request.setPhone(updateUser.getPhone());
-        request.setAddress(updateUser.getAddress());
+    public String updateProfile(@ModelAttribute User updateUser, HttpSession session, RedirectAttributes redirectAttributes) {
+        System.out.println("\n\n======== START PROFILE UPDATE ========");
+        System.out.println("Received request to update profile for user ID: " + updateUser.getId());
 
-        // Gọi phương thức updateUser với userId và request
-        userService.updateUser(String.valueOf(updateUser.getId()), request);
+        try {
+            // Tạo một đối tượng UserUpdateRequest từ User
+            UserUpdateRequest request = new UserUpdateRequest();
+            request.setFullName(updateUser.getFullName());
+            request.setGender(updateUser.getGender());
+            request.setDob(updateUser.getDob());
+            request.setEmail(updateUser.getEmail());
+            request.setPhone(updateUser.getPhone());
+            request.setAddress(updateUser.getAddress());
 
-        model.addAttribute("success", "Cập nhật thông tin thành công!");
-        return "redirect:/profile"; // Chuyển hướng lại trang profile
+            System.out.println("Created UserUpdateRequest with data: " + request);
+
+            // Gọi phương thức updateUser với userId và request
+            System.out.println("Calling userService.updateUser with ID: " + updateUser.getId());
+            User updatedUser = userService.updateUser(String.valueOf(updateUser.getId()), request);
+            System.out.println("User update completed successfully");
+
+            // Cập nhật thông tin session
+            session.setAttribute("loggedIn", true);
+            session.setAttribute("username", updatedUser.getFullName() != null && !updatedUser.getFullName().trim().isEmpty()
+                    ? updatedUser.getFullName() : updatedUser.getUsername());
+            session.setAttribute("user", updatedUser);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
+
+            // Chuyển hướng về trang chủ
+            return "redirect:/profile"; // Sửa từ /trangchu thành / (root path)
+        } catch (Exception e) {
+            // Xử lý nếu có lỗi
+            System.out.println("ERROR: Error updating profile: " + e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin: " + e.getMessage());
+            return "redirect:/profile";
+        }
     }
 }
 

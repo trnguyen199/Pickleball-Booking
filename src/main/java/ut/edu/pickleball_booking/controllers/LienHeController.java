@@ -10,6 +10,6 @@ public class LienHeController {
 
     @GetMapping("/lienhe")
     public String getLienhe() {
-        return "master/lienhe"; 
+        return "public/lienhe";
     }
 }

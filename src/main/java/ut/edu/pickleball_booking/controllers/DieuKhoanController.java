@@ -10,6 +10,6 @@ public class DieuKhoanController {
 
     @GetMapping("/dieukhoan")
     public String getDieukhoan() {
-        return "master/dieukhoan"; 
+        return "public/dieukhoan";
     }
 }

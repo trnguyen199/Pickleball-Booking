@@ -2,6 +2,8 @@ package ut.edu.pickleball_booking.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "courts")
 public class Court {
@@ -22,7 +24,14 @@ public class Court {
     @Column(name = "image_url", nullable = true)
     private String imageUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User courtOwner;
+
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL)
+    private List<TimeSlot> timeSlots;
     // Getters and Setters
+    
     public Long getId() {
         return id;
     }
@@ -61,5 +70,21 @@ public class Court {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+    
+    public User getCourtOwner() {
+        return courtOwner;
+    }
+
+    public void setCourtOwner(User courtOwner) {
+        this.courtOwner = courtOwner;
+    }
+
+    public List<TimeSlot> getTimeSlots() {
+        return timeSlots;
+    }
+
+    public void setTimeSlots(List<TimeSlot> timeSlots) {
+        this.timeSlots = timeSlots;
     }
 }

@@ -8,13 +8,14 @@
 
             <div class="card">
                 <h2>Đăng ký làm chủ sân</h2>
-                <form action="/register-owner" method="post">
-                <div class="option-group">
-                    <label><input type="radio" name="plan" value="1_thang" required> 1 tháng – 300.000 VND</label>
-                    <label><input type="radio" name="plan" value="3_thang"> 3 tháng – 850.000 VND</label>
-                    <label><input type="radio" name="plan" value="6_thang"> 6 tháng – 1.600.000 VND</label>
-                    <label><input type="radio" name="plan" value="1_nam"> 1 năm – 3.000.000 VND</label>
-                </div>
+                <form action="/danhchochusan/thanhtoan" method="post" th:object="${_csrf}">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                  <div class="option-group">
+                      <label><input type="radio" name="plan" value="1_thang" required> 1 tháng – 300.000 VND</label>
+                      <label><input type="radio" name="plan" value="3_thang"> 3 tháng – 850.000 VND</label>
+                      <label><input type="radio" name="plan" value="6_thang"> 6 tháng – 1.600.000 VND</label>
+                      <label><input type="radio" name="plan" value="1_nam"> 1 năm – 3.000.000 VND</label>
+                  </div>
                 <button type="submit" class="btn-register">Đăng ký ngay</button>
                 </form>
           </div>

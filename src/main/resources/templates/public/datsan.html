@@ -9,25 +9,24 @@
           <div class="nav-controls">
             <span><button class="today-btn">Hôm nay</button></span>
 
-            <span>&lt; 14 tháng 04 - 20 tháng 04 2025 &gt;</span>
+            <div id="current-week"></div>
             <div class="view-toggle">
-              <button>Tuần</button>
-              <button>Ngày</button>
+              <button>Tuần sau</button>
             </div>
           </div>
         
           <div class="booking-wrapper">
             <table>
               <thead>
-                <tr>
-                  <th>Sân</th>
-                  <th>Thứ Hai 14/04</th>
+                <tr id="week-header">
+                  <th>Khung giờ</th>
+                  <!-- <th>Thứ Hai 14/04</th>
                   <th>Thứ Ba 15/04</th>
                   <th>Thứ Tư 16/04</th>
                   <th>Thứ Năm 17/04</th>
                   <th>Thứ Sáu 18/04</th>
                   <th>Thứ Bảy 19/04</th>
-                  <th>Chủ Nhật 20/04</th>
+                  <th>Chủ Nhật 20/04</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -148,6 +147,12 @@
     .selected {
       background-color: rgba(0, 255, 0, 0.3);
     }
+    .disabled {
+      background-color: #eee;
+      color: #999;
+      pointer-events: none;
+      opacity: 0.5;
+    }
   </style>
 
   <script>
@@ -203,6 +208,104 @@
       localStorage.setItem('bookingData', JSON.stringify(bookingData));
       window.location.href = '/danhsachsan/thanhtoan';
     });
+
+
+    //week hiện tại 
+    function formatVietnameseDate(date) {
+        const options = { day: '2-digit', month: 'long', year: 'numeric' };
+        return date.toLocaleDateString('vi-VN', options);
+    }
+
+    function getWeekRange() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 (Chủ nhật) - 6 (Thứ Bảy)
+        const mondayOffset = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek); // Nếu Chủ nhật thì -6, còn lại tính offset đến thứ 2
+        const sundayOffset = (dayOfWeek === 0 ? 0 : 7 - dayOfWeek);
+
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + mondayOffset);
+
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() + sundayOffset);
+
+        return `< ${formatVietnameseDate(monday)} - ${formatVietnameseDate(sunday)} >`;
+    }
+
+    document.getElementById("current-week").innerHTML = getWeekRange();
+
+
+    //Thứ ngày hiện tại
+    const weekdays = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+
+    function getWeekDates() {
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 (Chủ nhật) - 6 (Thứ Bảy)
+
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // Lùi về thứ Hai
+
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        days.push(d);
+      }
+
+      return days;
+    }
+
+    function formatDayVN(date) {
+      const weekday = weekdays[date.getDay()];
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      return `${weekday} ${day}/${month}`;
+    }
+
+    const headerRow = document.getElementById("week-header");
+    const weekDates = getWeekDates();
+
+    weekDates.forEach(date => {
+      const th = document.createElement("th");
+      th.textContent = formatDayVN(date);
+      headerRow.appendChild(th);
+    });
+
+
+    //disable lịch đặt 
+    function disablePastDates() {
+      const today = new Date();
+      const todayDate = today.getDate(); // ngày hiện tại (VD: 25)
+  
+      const weekDates = []; // sẽ lưu ngày tương ứng với từng cột
+      const dayOfWeek = today.getDay();
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // lùi về thứ Hai
+  
+      // tạo mảng chứa ngày của từng cột (từ Thứ Hai → Chủ Nhật)
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        weekDates.push(d.getDate()); // chỉ lấy ngày (1 → 31)
+      }
+  
+      // chọn tất cả hàng trong bảng
+      const rows = document.querySelectorAll("table tbody tr");
+      rows.forEach(row => {
+        const tds = row.querySelectorAll("td");
+  
+        // bỏ qua ô đầu tiên (cột thời gian), chỉ xử lý từ thứ 2 → CN (td[1] đến td[7])
+        for (let i = 1; i <= 7; i++) {
+          const cell = tds[i];
+          const cellDate = weekDates[i - 1];
+  
+          if (cellDate < todayDate) {
+            cell.classList.add("disabled");
+          }
+        }
+      });
+    }
+  
+    window.onload = disablePastDates;
   </script>
   
   

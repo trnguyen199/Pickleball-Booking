@@ -10,6 +10,6 @@ public class GioiThieuController {
 
     @GetMapping("/gioithieu")
     public String getGioithieun() {
-        return "master/gioithieu"; 
+        return "public/gioithieu";
     }
 }

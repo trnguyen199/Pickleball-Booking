@@ -1,0 +1,81 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+      <div class="container d-flex gap-4">
+        <!-- Sidebar -->
+        <aside class="sidebar" style="width: 250px;">
+          <h2>Khu vực</h2>
+          <ul style="list-style: none; padding: 0; font-weight: 400;">
+            <ul>
+              <li class="active"><a href="#">Thành phố Hồ Chí Minh</a></li>
+              <li><a href="#">Quận 1</a></li>
+              <li><a href="#">Quận 2</a></li>
+              <li><a href="#">Quận 3</a></li>
+              <li><a href="#">Quận 4</a></li>
+              <li><a href="#">Quận 5</a></li>
+              <li><a href="#">Quận 6</a></li>
+              <li><a href="#">Quận 7</a></li>
+              <li><a href="#">Quận 8</a></li>
+              <li><a href="#">Quận 10</a></li>
+              <li><a href="#">Quận 11</a></li>
+              <li><a href="#">Quận 12</a></li>
+              <li><a href="#">Quận Bình Thạnh</a></li>
+              <li><a href="#">Quận Gò Vấp</a></li>
+              <li><a href="#">Quận Phú Nhuận</a></li>
+              <li><a href="#">Quận Tân Bình</a></li>
+              <li><a href="#">Quận Tân Phú</a></li>
+              <li><a href="#">Thành phố Thủ Đức</a></li>
+            </ul>
+            
+          
+          </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1">
+          <h1>⭐ Danh sách sân Pickleball ⭐</h1>
+          <div class="card-container d-flex flex-wrap gap-4">
+    
+          <div th:each="court : ${courts}" class="card p-3 border rounded shadow-sm" style="width: 300px;">
+            <img th:src="@{/assets/img/elements/{img}(img=${court.imageUrl})}" 
+            alt="Sân" 
+            style="width: 100%; height: 180px; object-fit: cover;">
+            <h3 th:text="${court.name}">Tên sân</h3>
+            <p>📍 <span th:text="${court.location}">Địa chỉ</span></p>
+            <p th:text="${court.description}">Mô tả</p>
+            <a class="btn btn-primary" th:href="@{/danhsachsan/datsan}">Chi tiết</a>
+          </div>
+        </main>
+      </div>
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+
+</body>
+<style>
+  .sidebar ul li {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Gạch chân mờ */
+  }
+
+  .sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+  }
+
+  .sidebar ul li.active {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+</html>

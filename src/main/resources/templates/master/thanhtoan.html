@@ -6,24 +6,13 @@
       <th:block th:fragment="layout-content">
         <main class="form-thanhtoan">
           <div id="booking-info"></div>
-          <script>
-            const bookingData = JSON.parse(localStorage.getItem('bookingData'));
-            if (bookingData) {
-              const container = document.getElementById('booking-info');
-              let html = '<ul>';
-              bookingData.slots.forEach(slot => {
-                html += `<li>${slot.day} - ${slot.time}: ${slot.price.toLocaleString()} đ</li>`;
-              });
-              html += `</ul><p><strong>Tổng tiền: ${bookingData.total.toLocaleString()} đ</strong></p>`;
-              container.innerHTML = html;
-            } else {
-              document.getElementById('booking-info').innerText = 'Không có thông tin đặt sân!';
-            }
-          </script>
-          
+          <main class="form-thanhtoan">
+            <h2>Thông tin thanh toán</h2>
+            <p>Gói đăng ký đã chọn: <strong th:text="${selectedPlan}"></strong></p>
         </main>
         <button id="confirm-payment" class="btn-confirm">Xác nhận đã thanh toán</button>
       </th:block>
+    </div>
     <div th:replace="fragments/_layoutfooter::layout-footer"></div>
 </body>
 </html>

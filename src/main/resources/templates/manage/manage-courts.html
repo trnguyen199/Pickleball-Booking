@@ -1,0 +1,65 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <div class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+        <div class="content-pa">
+            <h1>Quản lý sân</h1>
+            <section id="court-list">
+                <h2>Danh sách sân</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tên sân</th>
+                            <th>Vị trí</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="court : ${courts}">
+                            <td th:text="${court.name}">Tên sân</td>
+                            <td th:text="${court.location}">Vị trí</td>
+
+                            <td>
+                                <div class="btn-edit">
+                                    <form th:action="@{/courts/delete/{id}(id=${court.id})}"
+                                      method="post">
+                                    <button type="submit" class="btn delete">Xóa</button>
+                                    </form>
+                                    <form th:action="@{/courts/update/{id}(id=${court.id})}"
+                                        method="post">
+                                        <button type="submit" class="btn edit">Sửa</button>
+                                    </form>
+                                </div>
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </section>
+            <section id="create-court">
+                <h2>Tạo mới sân</h2>
+                <form class="form-input" id="create-court-form" th:action="@{/courts/create}" method="post" enctype="multipart/form-data">
+                    <label class="label-set" for="court-name">Tên sân:</label>
+                    <input type="text" id="court-name" name="name" required>
+                
+                    <label class="label-set" for="court-description">Mô tả:</label>
+                    <textarea id="court-description" name="description" required></textarea>
+                
+                    <label class="label-set" for="court-location">Vị trí:</label>
+                    <input type="text" id="court-location" name="location" required>
+                
+                    <label class="label-set" for="court-image">Ảnh sân:</label>
+                    <input type="file" id="court-image" name="image" accept="image/*" required>
+                
+                    <button type="submit">Tạo sân</button>
+                </form>
+            </section>
+        </div>
+    </div>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>

@@ -31,7 +31,7 @@ public class UserService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username đã tồn tại");
         }
-    
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -40,7 +40,7 @@ public class UserService {
 
         // Gán vai trò mặc định
         Role defaultRole = roleRepository.findByName("ROLE_CUSTOMER")
-            .orElseThrow(() -> new IllegalArgumentException("Vai trò mặc định không tồn tại"));
+                .orElseThrow(() -> new IllegalArgumentException("Vai trò mặc định không tồn tại"));
         user.getRoles().add(defaultRole);
 
         return userRepository.save(user);
@@ -49,11 +49,18 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // public User updateUser(String userId, UserUpdateRequest request) {
+    //     User user = userRepository.findById(Long.parseLong(userId))
+    //             .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+    //     user.setUsername(request.getUsername());
+    //     user.setEmail(request.getEmail()); // Ensure `email` exists in User entity
+    //     return userRepository.save(user);
+    // }
     public User updateUser(String userId, UserUpdateRequest request) {
         // Tìm người dùng theo ID
         User user = userRepository.findById(Long.parseLong(userId))
-            .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại"));
-    
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại"));
+
         // Cập nhật thông tin người dùng
         user.setFullName(request.getFullName());
         user.setGender(request.getGender());
@@ -61,7 +68,7 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-    
+
         return userRepository.save(user);
     }
     public void deleteUser(Long userId) {
@@ -80,7 +87,14 @@ public class UserService {
     }
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với tên đăng nhập: " + username));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với tên đăng nhập: " + username));
     }
+
+    public User findById(Long ownerId) {
+        return userRepository.findById(ownerId).orElse(null);
+    }
+
+//    public User findById(Long ownerId) {
+//    }
 }
 

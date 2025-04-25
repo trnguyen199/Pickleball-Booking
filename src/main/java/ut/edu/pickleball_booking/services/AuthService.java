@@ -17,6 +17,7 @@ public class AuthService {
     public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        
     }
     public boolean authenticate(String username, String rawPassword) {
         User user = userRepository.findByUsername(username).orElse(null);
@@ -25,10 +26,6 @@ public class AuthService {
             System.out.println("User not found: " + username);
             return false; 
         }
-    
-        System.out.println("Raw password: " + rawPassword);
-        System.out.println("Encoded password from DB: " + user.getPassword());
-    
         return passwordEncoder.matches(rawPassword, user.getPassword());
     }
 

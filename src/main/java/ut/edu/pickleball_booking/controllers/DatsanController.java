@@ -10,6 +10,6 @@ public class DatsanController {
 
     @GetMapping("/danhsachsan/datsan")
     public String getDanhSachSan() {
-        return "master/datsan"; 
+        return "public/datsan";
     }
 }

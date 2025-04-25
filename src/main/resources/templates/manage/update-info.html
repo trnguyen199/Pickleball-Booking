@@ -7,9 +7,6 @@
         <div th:replace="fragments/_layoutsidebar::sidebar"></div>
         <div class="content-pa">
             <h1>Cập nhật thông tin chủ sân</h1>
-            <ul>
-                <li th:each="role : ${roles}" th:text="${role.name}"></li>
-            </ul>
             <section id="personal-info">
                 <h2>Thông tin cá nhân</h2>
                 <form class="form-input" id="info-form" th:action="@{/update-owner}" method="post" th:object="${user}">
