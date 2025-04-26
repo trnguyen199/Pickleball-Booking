@@ -70,8 +70,8 @@ public class ProfileController {
 
             // Cập nhật thông tin session
             session.setAttribute("loggedIn", true);
-            session.setAttribute("username", updatedUser.getFullName() != null && !updatedUser.getFullName().trim().isEmpty()
-                    ? updatedUser.getFullName() : updatedUser.getUsername());
+            session.setAttribute("username", updatedUser.getUsername() != null && !updatedUser.getUsername().trim().isEmpty()
+                    ? updatedUser.getUsername() : updatedUser.getUsername());
             session.setAttribute("user", updatedUser);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
 

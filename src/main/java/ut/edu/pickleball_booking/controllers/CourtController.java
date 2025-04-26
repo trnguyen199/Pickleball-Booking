@@ -49,11 +49,11 @@ public class CourtController {
 
     @PostMapping("/create")
     public String createCourt(@RequestParam("name") String name,
-                            @RequestParam("description") String description,
-                            @RequestParam("location") String location,
-                            @RequestParam("ownerId") Long ownerId,
-                            @RequestParam("image") MultipartFile image,
-                            RedirectAttributes redirectAttributes) {
+                               @RequestParam("description") String description,
+                               @RequestParam("location") String location,
+                               @RequestParam("ownerId") Long ownerId,
+                               @RequestPart("image") MultipartFile image,
+                               RedirectAttributes redirectAttributes) {
         try {
             // Lưu ảnh
             String imageUrl = null;
@@ -61,35 +61,36 @@ public class CourtController {
                 String uploadDir = "src/main/resources/static/assets/img/elements";
                 File uploadDirFile = new File(uploadDir);
                 if (!uploadDirFile.exists()) uploadDirFile.mkdirs();
-
+    
                 String fileName = image.getOriginalFilename();
                 image.transferTo(new File(uploadDir + "/" + fileName));
                 imageUrl = fileName;
             }
-
+    
             // Lấy User theo ownerId
             User owner = userService.findById(ownerId);
             if (owner == null) {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy chủ sân.");
                 return "redirect:/courts";
             }
-
+    
             Court court = new Court();
             court.setName(name);
             court.setDescription(description);
             court.setLocation(location);
             court.setImageUrl(imageUrl);
-            court.setCourtOwner(owner); // 👈 gán chủ sân
-
+            court.setCourtOwner(owner);
+    
             courtService.saveCourt(court);
             redirectAttributes.addFlashAttribute("success", "Tạo sân thành công!");
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Lỗi khi tạo sân.");
         }
-
+    
         return "redirect:/danhchochusan/manage-courts";
     }
+    
 
 
     // Xóa sân
