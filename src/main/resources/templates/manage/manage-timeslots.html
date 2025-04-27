@@ -9,16 +9,12 @@
             <h1>Quản lý khung giờ sân</h1>
             <div class="time-settings">
                 <label for="listCourt">Danh sách sân</label>
-                <select id="court" name="courtId" required>
+                <select id="court" name="courtId" required onchange="loadTimeSlots()">
                     <option value="">-- Chọn sân --</option>
                     <option th:if="${#lists.isEmpty(courts)}" disabled="">Chưa có sân nào, vui lòng thêm sân trước</option>
                 
-                    <option th:each="court : ${courts}"
-                            th:value="${court.id}"
-                            th:text="${court.name}">
-                    </option>
-    
-                  </select>
+                    <option th:each="court : ${courts}" th:value="${court.id}" th:text="${court.name}"></option>
+                </select>
                 <label for="open-time">Giờ mở cửa:</label>
                 <input type="time" id="open-time" value="06:00">
 
@@ -36,8 +32,8 @@
                 <input type="price" id="price" value="100000">
 
                 <button class="generate-btn" onclick="generateSlots()">Tạo khung giờ</button>
-                <form id="timeSlotForm" action="/save" method="POST">
-
+                <form id="timeSlotForm" action="/danhchochusan/manage-timeslots/save" method="POST" th:object="${_csrf}">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <div class="slot-list" id="slot-list">
                         <!-- Danh sách khung giờ sẽ hiện ở đây -->
                     </div>
@@ -58,50 +54,41 @@
             const duration = parseInt(document.getElementById("duration").value);
             const slotListDiv = document.getElementById("slot-list");
             const price = document.getElementById("price").value;
-            // Xoá nội dung các slot cũ
+        
             slotListDiv.innerHTML = "";
             timeSlots = [];
-    
+        
             let [oh, om] = openTime.split(":").map(Number);
             let [ch, cm] = closeTime.split(":").map(Number);
-    
+        
             let start = new Date();
             start.setHours(oh, om, 0, 0);
-    
+        
             let end = new Date();
             end.setHours(ch, cm, 0, 0);
-    
+        
             while (start < end) {
                 let slotStart = new Date(start);
                 start.setMinutes(start.getMinutes() + duration);
                 if (start > end) break;
                 let slotEnd = new Date(start);
-    
-                // Hàm định dạng giờ (lấy HH:mm)
+        
                 const format = (d) => d.toTimeString().slice(0, 5);
-    
-                // Tạo phần tử hiển thị slot trên giao diện
+        
                 const div = document.createElement("div");
                 div.className = "slot-item";
-                // Lấy courtId từ dropdown (nếu chưa chọn, sẽ là chuỗi rỗng)
                 const courtId = document.getElementById("court").value;
                 const key = `${format(slotStart)}-${format(slotEnd)}`;
-                // Hiển thị dạng: "06:00 - 07:00" kèm nút xoá
                 div.innerHTML = `
-                ${format(slotStart)} - ${format(slotEnd)} 
-                <input type="number" placeholder="Giá" min="0" value="${price}" onchange="updateSlotPrice('${key}', this.value)">
-                <button type="button" onclick="this.parentElement.remove(); removeTimeSlot('${key}');">Xoá</button>
-            `;
-
+                    ${format(slotStart)} - ${format(slotEnd)} 
+                    <input type="number" placeholder="Giá" min="0" value="${price}" onchange="updateSlotPrice('${key}', this.value)">
+                    <button type="button" onclick="this.parentElement.remove(); removeTimeSlot('${key}');">Xoá</button>
+                `;
+        
                 slotListDiv.appendChild(div);
-    
-                // Tạo chuỗi định dạng cho hidden input dạng "startTime-endTime-courtId"
-                const slotString = `${format(slotStart)}|${format(slotEnd)}|${courtId}|${price}`;
+        
+                const slotString = `${format(slotStart)}-${format(slotEnd)}-${courtId}-${price}`;
                 timeSlots.push({ key: key, value: slotString });
-                addTimeSlot(slotString);
-
-    
-                // Thêm hidden input với cùng tên "timeSlots"
                 addTimeSlot(slotString);
             }
         }
@@ -122,6 +109,36 @@
             const slotListDiv = document.getElementById("slot-list");
             slotListDiv.innerHTML = "";
             timeSlots.forEach(ts => addTimeSlot(ts.value));
+        }
+        async function loadTimeSlots() {
+            const courtId = document.getElementById("court").value;
+            const slotListDiv = document.getElementById("slot-list");
+    
+            // Xóa nội dung cũ
+            slotListDiv.innerHTML = "";
+    
+            if (!courtId) {
+                return; // Nếu chưa chọn sân, không làm gì
+            }
+    
+            try {
+                // Gọi API để lấy danh sách khung giờ
+                const response = await fetch(`/danhchochusan/manage-timeslots/get?courtId=${courtId}`);
+                const timeSlots = await response.json();
+    
+                // Hiển thị danh sách khung giờ
+                timeSlots.forEach(slot => {
+                    const div = document.createElement("div");
+                    div.className = "slot-item";
+                    div.innerHTML = `
+                        ${slot.startTime} - ${slot.endTime} 
+                        <input type="number" name="timeSlots" value="${slot.price}" readonly>
+                    `;
+                    slotListDiv.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Lỗi khi tải khung giờ:", error);
+            }
         }
 </script>
 </html>

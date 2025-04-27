@@ -1,42 +1,55 @@
 package ut.edu.pickleball_booking.controllers;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.util.List;
 import ut.edu.pickleball_booking.entity.User;
+import ut.edu.pickleball_booking.repositories.CourtRepository;
+import ut.edu.pickleball_booking.repositories.TimeSlotRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import ut.edu.pickleball_booking.entity.Court;
 import ut.edu.pickleball_booking.entity.Role;
+import ut.edu.pickleball_booking.entity.TimeSlot;
+
 import org.springframework.ui.Model;
 import ut.edu.pickleball_booking.services.UserService;
 import ut.edu.pickleball_booking.services.CourtService;
-
 
 @Controller
 public class DanhChoChuSanController {
     private final UserService userService;
     private final CourtService courtService;
+    private final CourtRepository courtRepository;
+    private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    public DanhChoChuSanController(UserService userService, CourtService courtService) {
+    public DanhChoChuSanController(UserService userService, CourtService courtService,CourtRepository courtRepository, TimeSlotRepository timeSlotRepository) {
         this.userService = userService;
         this.courtService = courtService;
+        this.courtRepository = courtRepository;
+        this.timeSlotRepository = timeSlotRepository;
     }
     
+            
+
+
     @GetMapping("/danhchochusan")
     public String getDanhSachSan(Model model, Principal principal, HttpSession session) {
         if (principal == null) {
-            System.out.println("Principal is null. Redirecting to login page.");
-            return "redirect:/login"; // Chuyển hướng đến trang đăng nhập
+            return "redirect:/login"; 
         }
     
         // Lấy username của người dùng đã đăng nhập
@@ -46,7 +59,6 @@ public class DanhChoChuSanController {
         // Lấy danh sách vai trò của người dùng
         List<Role> roles = userService.getRolesByUsername(username);
         if (roles == null || roles.isEmpty()) {
-            System.out.println("No roles found for username: " + username);
             model.addAttribute("error", "Không tìm thấy vai trò nào cho người dùng.");
             return "redirect:/login"; // Chuyển hướng đến trang đăng nhập nếu không có vai trò
         }
@@ -114,12 +126,62 @@ public class DanhChoChuSanController {
         return "manage/manage-courts";
     }
 
-
-
     @GetMapping("/danhchochusan/manage-timeslots")
-    public String manageTimeslots() {
-        return "manage/manage-timeslots"; // Tên template cho trang quản lý khung giờ
+    public String manageTimeslots(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/login"; 
+        }
+
+        List<Court> courts = courtService.getCourtsByOwnerId(userId);
+        model.addAttribute("courts", courts); // Thêm danh sách sân vào model
+        return "manage/manage-timeslots"; // Trả về template cho trang quản lý khung giờ
     }
+
+    @PostMapping("/danhchochusan/manage-timeslots/save")
+    public ResponseEntity<?> saveTimeSlots(@RequestParam List<String> timeSlots) {
+
+        try {
+            for (String timeSlotStr : timeSlots) {
+                String[] parts = timeSlotStr.split("-");
+                if (parts.length != 4) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Định dạng thời gian không hợp lệ: " + timeSlotStr);
+                }
+
+                String startTime = parts[0];
+                String endTime = parts[1];
+                Long courtId = Long.parseLong(parts[2]);
+                int price = Integer.parseInt(parts[3]); 
+
+                Court court = courtRepository.findById(courtId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy sân với ID: " + courtId));
+
+                TimeSlot timeSlot = new TimeSlot();
+                timeSlot.setStartTime(startTime);
+                timeSlot.setEndTime(endTime);
+                timeSlot.setCourt(court);
+                timeSlot.setPrice(price); 
+
+                timeSlotRepository.save(timeSlot);
+            }
+            return ResponseEntity.ok("Khung giờ đã được lưu thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi lưu khung giờ: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/danhchochusan/manage-timeslots/get")
+    @ResponseBody
+    public List<TimeSlot> getTimeSlotsByCourt(@RequestParam Long courtId) {
+        return timeSlotRepository.findByCourtId(courtId); 
+    }
+
+
+
 
     @GetMapping("/danhchochusan/bookings")
     public String bookings() {

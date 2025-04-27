@@ -4,7 +4,7 @@
 <body>
     <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
     <th:block th:fragment="layout-content">
-        <div class="wrapper-ct">
+        <div class="wrapper">
           <form action="/profile/update" method="post" th:object="${user}">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" name="id" th:value="*{id}" /> <!-- Thêm trường ẩn cho ID -->
@@ -31,7 +31,32 @@
 
                 </div>
               </div>
-
+              <!-- Lịch sử đặt sân -->
+              <div class="history-container">
+                <h2>Lịch sử đặt sân</h2>
+                <table class="history-table">
+                  <thead>
+                    <tr>
+                      <th>Tên sân</th>
+                      <th>Địa chỉ</th>
+                      <th>Khung giờ đã đặt</th>
+                      <th>Số tiền</th>
+                      <th>Đánh giá</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Ví dụ 1 dòng -->
+                    <tr>
+                      <td>Sân A</td>
+                      <td>123 Đường ABC, TP.HCM</td>
+                      <td>7:00 - 9:00</td>
+                      <td>500.000₫</td>
+                      <td><button class="review-btn">Đánh giá</button></td>
+                    </tr>
+                    <!-- Dòng khác sẽ lặp ở đây (bạn sẽ dùng Thymeleaf để lặp) -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </form>
         </div>

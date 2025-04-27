@@ -24318,63 +24318,78 @@ section label {
   height: 100vh;
 }
 /* Profile  */
-/* * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-}
-*/
+
 .wrapper-ct {
-  background-color: #f0f2f5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.profile-container {
+  margin-bottom: 40px;
 }
 
 .profile-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 600px;
-  width: 100%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.avatar img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #009578;
+.profile-card div {
   margin-bottom: 15px;
 }
 
-.username {
-  font-size: 26px;
-  font-weight: bold;
-  color: #333;
+.profile-card input, .profile-card select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
 }
 
-.role {
-  font-size: 16px;
-  color: #777;
+button[type="submit"] {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.history-container {
+  margin-top: 50px;
+}
+
+.history-container h2 {
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
-.profile-info {
-  text-align: left;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  line-height: 1.8;
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.profile-info div {
-  font-size: 15px;
-  margin-bottom: 8px;
+.history-table th, .history-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.history-table th {
+  background-color: #f2f2f2;
+}
+
+.review-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.review-btn:hover {
+  background-color: #0056b3;
 }
 
 .edit-btn {

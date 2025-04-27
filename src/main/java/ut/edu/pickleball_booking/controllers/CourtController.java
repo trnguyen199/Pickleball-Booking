@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.servlet.http.HttpSession;
 import ut.edu.pickleball_booking.entity.Court;
 import ut.edu.pickleball_booking.entity.User;
 import ut.edu.pickleball_booking.repositories.CourtRepository;
@@ -52,19 +54,32 @@ public class CourtController {
                                @RequestParam("description") String description,
                                @RequestParam("location") String location,
                                @RequestParam("ownerId") Long ownerId,
-                               @RequestPart("image") MultipartFile image,
+                                HttpSession session,
+                            //    @RequestParam("image") MultipartFile image,
                                RedirectAttributes redirectAttributes) {
         try {
             // Lưu ảnh
-            String imageUrl = null;
-            if (!image.isEmpty()) {
-                String uploadDir = "src/main/resources/static/assets/img/elements";
-                File uploadDirFile = new File(uploadDir);
-                if (!uploadDirFile.exists()) uploadDirFile.mkdirs();
+            // String imageUrl = null;
+            // if (!image.isEmpty()) {
+            //     String uploadDir = "src/main/resources/static/assets/img/elements";
+            //     File uploadDirFile = new File(uploadDir);
+            //     if (!uploadDirFile.exists()) uploadDirFile.mkdirs();
     
-                String fileName = image.getOriginalFilename();
-                image.transferTo(new File(uploadDir + "/" + fileName));
-                imageUrl = fileName;
+            //     String fileName = image.getOriginalFilename();
+            //     image.transferTo(new File(uploadDir + "/" + fileName));
+            //     imageUrl = fileName;
+            // }
+    
+            // Lấy User theo ownerId
+
+            if (ownerId == null) {
+                ownerId = (Long) session.getAttribute("userId"); // lấy userId từ session
+            }
+    
+            // Kiểm tra xem ownerId có hợp lệ không
+            if (ownerId == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy chủ sân.");
+                return "redirect:/courts";
             }
     
             // Lấy User theo ownerId
@@ -74,20 +89,29 @@ public class CourtController {
                 return "redirect:/courts";
             }
     
+            // Tạo đối tượng Court và thiết lập các giá trị
             Court court = new Court();
             court.setName(name);
             court.setDescription(description);
             court.setLocation(location);
-            court.setImageUrl(imageUrl);
-            court.setCourtOwner(owner);
+            court.setCourtOwner(owner); // gán owner cho court
     
+            System.out.println("Court Name: " + court.getName());
+            System.out.println("Court Location: " + court.getLocation());
+            System.out.println("Court Description: " + court.getDescription());
+            System.out.println("Court Owner: " + (court.getCourtOwner() != null ? court.getCourtOwner().getId() : "null"));
+    
+            // Lưu thông tin sân
             courtService.saveCourt(court);
+    
+            // Thêm thông báo thành công
             redirectAttributes.addFlashAttribute("success", "Tạo sân thành công!");
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Lỗi khi tạo sân.");
         }
     
+        // Chuyển hướng đến trang quản lý sân
         return "redirect:/danhchochusan/manage-courts";
     }
     

@@ -42,7 +42,7 @@
             </section>
             <section id="create-court">
                 <h2>Tạo mới sân</h2>
-                <form class="form-input" id="create-court-form" th:action="@{/courts/create}" method="post" enctype="multipart/form-data">
+                <form class="form-input" id="create-court-form" th:action="@{/courts/create}" method="post">
                     <label class="label-set" for="court-name">Tên sân:</label>
                     <input type="text" id="court-name" name="name" required>
                 
@@ -52,9 +52,11 @@
                     <label class="label-set" for="court-location">Vị trí:</label>
                     <input type="text" id="court-location" name="location" required>
                 
-                    <label class="label-set" for="court-image">Ảnh sân:</label>
-                    <input type="file" id="court-image" name="image" accept="image/*" required>
-                    <input type="hidden" name="ownerId" value="7" />
+                    <!-- <label class="label-set" for="court-image">Ảnh sân:</label>
+                    <input type="file" id="court-image" name="image" accept="image/*"> -->
+                    <input type="hidden" name="ownerId" th:value="${userId}" />
+
+
                     <button type="submit">Tạo sân</button>
                 </form>
             </section>

@@ -20,69 +20,20 @@
               <thead>
                 <tr id="week-header">
                   <th>Khung giờ</th>
-                  <!-- <th>Thứ Hai 14/04</th>
-                  <th>Thứ Ba 15/04</th>
-                  <th>Thứ Tư 16/04</th>
-                  <th>Thứ Năm 17/04</th>
-                  <th>Thứ Sáu 18/04</th>
-                  <th>Thứ Bảy 19/04</th>
-                  <th>Chủ Nhật 20/04</th> -->
                 </tr>
               </thead>
               <tbody>
-                <!-- Vòng lặp thời gian -->
-                <tr>
-                  <td class="time-col">06:00 - 08:00</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                </tr>
-                <tr>
-                  <td class="time-col">08:00 - 10:00</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                  <td class="price-cell">120.000 đ</td>
-                </tr>
-                <tr>
-                  <td class="time-col">10:00 - 12:00</td>
-                  <td class="price-cell">90.000 đ</td>
-                  <td class="price-cell">90.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                </tr>
-                <tr>
-                  <td class="time-col">12:00 - 14:00</td>
-                  <td class="price-cell">90.000 đ</td>
-                  <td class="price-cell">90.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                </tr>
-                <tr>
-                  <td class="time-col">12:00 - 14:00</td>
-                  <td class="price-cell">90.000 đ</td>
-                  <td class="price-cell">90.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                  <td class="price-cell">100.000 đ</td>
-                </tr>
-                <!-- Add more time slots as needed -->
-              </tbody>
+                <tr th:each="timeSlot : ${timeSlots}">
+                  <td class="time-col" th:text="${timeSlot.startTime} + ' - ' + ${timeSlot.endTime}"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+              </tr>
+            </tbody>
             </table>
             <button class="btn-datsan btn btn-primary" style="margin: 0 auto;">Đặt sân</button>
         </div>
