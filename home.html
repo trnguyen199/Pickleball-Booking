@@ -1,0 +1,121 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+        <div class="wrapper-home">
+            <div class="banner">
+                <img th:src="@{assets/img/backgrounds/banner.jpg}" alt="Banner" class="banner-img" />
+                <div class="overlay"></div>
+                <div class="content text-center">
+                    <h3>HỆ THỐNG HỖ TRỢ TÌM KIẾM SÂN BÃI NHANH</h3>
+                    <span class="section-separator"></span>
+                    <h3>Dữ liệu được cập nhật thường xuyên giúp cho người dùng tìm được sân một cách nhanh nhất</h3>
+                </div> 
+            
+                <div class="main-search-input-wrap">
+                    <form action="/search" method="get" class="main-search-input fl-wrap">
+                        <div class="row align-items-center">
+                            <div class="col-sm-4 col-12">
+                                <input type="text" name="name" placeholder="Nhập tên sân" class="form-control search-location" autocomplete="off">
+                            </div>
+                            <div class="col-sm-4 col-12">
+                                <select name="location" class="form-control">
+                                    <option value="">Chọn khu vực</option>
+                                    <option value="Quận 1">Quận 1</option>
+                                    <option value="Quận 2">Quận 2</option>
+                                    <option value="Quận 3">Quận 3</option>
+                                    <option value="Quận 4">Quận 4</option>
+                                    <option value="Quận 5">Quận 5</option>
+                                    <option value="Quận 6">Quận 6</option>
+                                    <option value="Quận 7">Quận 7</option>
+                                    <option value="Quận 8">Quận 8</option>
+                                    <option value="Quận 9">Quận 9</option>
+                                    <option value="Quận 10">Quận 10</option>
+                                    <option value="Quận 11">Quận 11</option>
+                                    <option value="Quận 12">Quận 12</option>
+                                    <option value="Quận Bình Thạnh">Quận Bình Thạnh</option>
+                                    <option value="Quận Gò Vấp">Quận Gò Vấp</option>
+                                    <option value="Quận Phú Nhuận">Quận Phú Nhuận</option>
+                                    <option value="Quận Tân Bình">Quận Tân Bình</option>
+                                    <option value="Quận Tân Phú">Quận Tân Phú</option>
+                                    <option value="Thành phố Thủ Đức">Thành phố Thủ Đức</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4 col-12">
+                                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="home-sub-intro pb-0">
+                <div class="container">
+                    <div class="row justify-center text-center">
+                        <div class="col-sm-4 col-12">
+                            <img th:src="@{assets/img/icons/intro/image_3.png}" alt="" class="mb-5" />
+                            <h3 class="home-sub-title mb-3">Tìm kiếm vị trí sân</h3>
+                            <p class="home-sub-des">
+                                Dữ liệu sân đấu dồi dào, liên tục cập nhật, giúp bạn dễ dàng tìm kiếm theo khu vực mong muốn
+                            </p>
+                        </div>
+                        <div class="col-sm-4 col-12">
+                            <img th:src="@{assets/img/icons/intro/image_4.png}" alt="" class="mb-5" />
+
+                            <h3 class="home-sub-title mb-3">Đặt lịch online</h3>
+                            <p class="home-sub-des">
+                                Không cần đến trực tiếp, không cần gọi điện đặt lịch, bạn hoàn toàn có thể đặt sân ở bất kì đâu có internet
+                            </p>
+                        </div>
+                        <div class="col-sm-4 col-12">
+                            <img th:src="@{assets/img/icons/intro/image_5.png}" alt="" class="mb-5" />
+
+                            <h3 class="home-sub-title mb-3">Tìm đối, bắt cặp đấu</h3>
+                            <p class="home-sub-des">
+                                Tìm kiếm, giao lưu các đội thi đấu thể thao, kết nối, xây dựng cộng đồng thể thao sôi nổi, mạnh mẽ
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="subscribe-footer">
+                <div class="container">
+                  <div class="row align-items-center">
+                    <div class="col-sm-5 col-12 d-flex flex-column flex-sm-row align-items-center">
+                        <img th:src="@{assets/img/icons/brands/logo.png}" alt="Datsanngay" class="mb-5" />
+
+                      <h4 class="subscribe-title">
+                        Bạn muốn đăng ký sử dụng <br> phần mềm quản lý sân DatSanNgay MIỄN PHÍ?
+                      </h4>
+                    </div>
+              
+                    <!-- Cột form -->
+                    <div class="col-sm-7 col-12">
+                      <form class="subscribe-form row g-3">
+                        <div class="col-sm-3 col-12">
+                          <input type="text" class="form-control" placeholder="Họ & tên *" required>
+                        </div>
+                        <div class="col-sm-3 col-12">
+                          <input type="text" class="form-control" placeholder="Số điện thoại *" required>
+                        </div>
+                        <div class="col-sm-3 col-12">
+                          <input type="email" class="form-control" placeholder="Email">
+                        </div>
+                        <div class="col-sm-3 col-12">
+                          <button type="submit" class="btn btn-primary w-100 h-100">Gửi</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+  
+</body>
+</html>

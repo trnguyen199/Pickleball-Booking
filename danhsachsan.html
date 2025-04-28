@@ -1,0 +1,88 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+      <div class="container d-flex gap-4">
+        <!-- Sidebar -->
+        <aside class="sidebar" style="width: 250px;">
+          <form action="/courts/search" method="get" class="search-form d-flex flex-column gap-3 mb-4">
+            <input type="text" name="name" placeholder="Nhập tên sân" class="form-control" />
+            <select name="location" class="form-control">
+                <option value="">Chọn khu vực</option>
+                <option value="Quận 1">Quận 1</option>
+                <option value="Quận 2">Quận 2</option>
+                <option value="Quận 3">Quận 3</option>
+                <option value="Quận 4">Quận 4</option>
+                <option value="Quận 5">Quận 5</option>
+                <option value="Quận 6">Quận 6</option>
+                <option value="Quận 7">Quận 7</option>
+                <option value="Quận 8">Quận 8</option>
+                <option value="Quận 9">Quận 9</option>
+                <option value="Quận 10">Quận 10</option>
+                <option value="Quận 11">Quận 11</option>
+                <option value="Quận 12">Quận 12</option>
+                <option value="Quận Bình Thạnh">Quận Bình Thạnh</option>
+                <option value="Quận Gò Vấp">Quận Gò Vấp</option>
+                <option value="Quận Phú Nhuận">Quận Phú Nhuận</option>
+                <option value="Quận Tân Bình">Quận Tân Bình</option>
+                <option value="Quận Tân Phú">Quận Tân Phú</option>
+                <option value="Thành phố Thủ Đức">Thành phố Thủ Đức</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+          </form>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1">
+          <h1>⭐ Danh sách sân Pickleball ⭐</h1>
+          <div th:if="${#lists.isEmpty(courts)}" class="alert alert-warning">
+            Hiện tại chưa có sân nào được thêm. Vui lòng quay lại sau!
+          </div>
+    
+          <div th:if="${!#lists.isEmpty(courts)}" class="card-container d-flex flex-wrap gap-4">
+    
+           <div th:each="court : ${courts}" class="card p-3 border rounded shadow-sm" style="width: 300px;">
+            <img th:src="@{/assets/img/elements/{img}(img=${court.imageUrl})}" 
+            alt="Sân" 
+            style="width: 100%; height: 180px; object-fit: cover;">
+            <h3 th:text="${court.name}">Tên sân</h3>
+            <p>
+                <span th:text="${court.location}">Địa chỉ</span>
+            </p>
+            <p th:text="${court.description}">Mô tả</p>
+            <a class="btn btn-primary" th:href="@{/danhsachsan/datsan/{courtId}(courtId=${court.id})}">Chi tiết</a>
+          </div>
+         
+        </main>
+      </div>
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+
+</body>
+<style>
+  .sidebar ul li {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Gạch chân mờ */
+  }
+
+  .sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+  }
+
+  .sidebar ul li.active {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+</html>
