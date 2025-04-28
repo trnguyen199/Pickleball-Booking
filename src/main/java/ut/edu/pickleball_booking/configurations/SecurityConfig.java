@@ -22,20 +22,25 @@ public class SecurityConfig {
                 .csrf()
                 .ignoringRequestMatchers("/api/**","/danhchochusan/manage-timeslots/save")
                 .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/profile", "/courts/create").authenticated()
-                .requestMatchers(HttpMethod.POST, "/profile/update").authenticated()
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/", "/danhchochusan/thanhtoan","/danhchochusan/manage-timeslots/save", "/danhsachsan", "/assets/**").permitAll()
-                .anyRequest().permitAll()
+                    .authorizeHttpRequests()
+                    .requestMatchers("/profile", "/courts/create").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/profile/update").authenticated()
+                    .requestMatchers("/login","/forgot-password","verify-code","/reset-password").permitAll()
+                    .requestMatchers("/", "/danhchochusan/thanhtoan","/danhchochusan/manage-timeslots/save", "/danhsachsan", "/assets/**").permitAll()
+                    .anyRequest().permitAll()
+                .and()
+                    .rememberMe()
+                    .key("uniqueAndSecret") // Khóa bí mật để mã hóa cookie
+                    .tokenValiditySeconds(7 * 24 * 60 * 60) // Thời gian sống của cookie (7 ngày)
+                    .rememberMeParameter("remember-me") // Tên tham số checkbox "Nhớ mật khẩu"
                 .and()
                 .formLogin()
-                .loginPage("/login")
-                .successHandler(loginSuccessHandler) // inject từ bean đã có
+                    .loginPage("/login")
+                    .successHandler(loginSuccessHandler) // inject từ bean đã có
                 .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true");
+                    .logout()
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout=true");
 
         return http.build();
     }

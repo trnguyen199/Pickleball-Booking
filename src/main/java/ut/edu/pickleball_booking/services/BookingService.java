@@ -56,4 +56,22 @@ public class BookingService {
             bookingRepository.save(booking);
         }
     }
+    
+    /**
+     * Lấy tất cả các đặt sân theo ID của chủ sân
+     * @param ownerId ID của chủ sân
+     * @return Danh sách đặt sân
+     */
+    public List<Booking> getBookingsByCourtOwnerId(Long ownerId) {
+        return bookingRepository.findByCourt_CourtOwner_Id(ownerId);
+    }
+    
+    /**
+     * Lấy tất cả đặt sân theo ID của sân
+     * @param courtId ID của sân
+     * @return Danh sách đặt sân
+     */
+    public List<Booking> getBookingsByCourtId(Long courtId) {
+        return bookingRepository.findByCourt_Id(courtId);
+    }
 }

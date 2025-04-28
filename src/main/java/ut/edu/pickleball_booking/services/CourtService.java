@@ -28,7 +28,7 @@ public class CourtService {
     public void deleteCourt(Long id) {
         courtRepository.deleteById(id);
     }
-
+    
     public List<Court> getCourtsByOwnerId(Long ownerId) {
         return courtRepository.findByCourtOwner_Id(ownerId); // sửa theo quan hệ @ManyToOne
     }

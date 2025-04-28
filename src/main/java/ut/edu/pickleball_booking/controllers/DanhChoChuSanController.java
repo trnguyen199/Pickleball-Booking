@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import ut.edu.pickleball_booking.entity.*;
 import ut.edu.pickleball_booking.repositories.CourtRepository;
@@ -107,16 +111,16 @@ public class DanhChoChuSanController {
 
     }
 
-    @GetMapping("/danhchochusan/update-info")
-    public String updateInfo(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        String username = principal.getName();
-        model.addAttribute("user", userService.findByUsername(username));
-        model.addAttribute("roles", userService.getRolesByUsername(username));
-        return "manage/update-info"; 
-    }
+    // @GetMapping("/danhchochusan/update-info")
+    // public String updateInfo(Model model, Principal principal) {
+    //     if (principal == null) {
+    //         return "redirect:/login";
+    //     }
+    //     String username = principal.getName();
+    //     model.addAttribute("user", userService.findByUsername(username));
+    //     model.addAttribute("roles", userService.getRolesByUsername(username));
+    //     return "manage/update-info"; 
+    // }
 
     @GetMapping("/danhchochusan/manage-courts")
     public String manageCourts(HttpSession session, Model model) {
@@ -185,9 +189,6 @@ public class DanhChoChuSanController {
         public List<TimeSlot> getTimeSlotsByCourt(@RequestParam Long courtId) {
             return timeSlotRepository.findByCourtId(courtId); 
         }
-
-
-
 
     @GetMapping("/danhchochusan/bookings")
     public String bookings() {
@@ -291,5 +292,173 @@ public class DanhChoChuSanController {
     @GetMapping("/danhchochusan/withdrawals")
     public String withdrawals() {
         return "manage/manage-withdrawals"; // Tên template cho trang rút tiền
+    }
+
+    @GetMapping("/danhchochusan/api/bookings")
+    @ResponseBody
+    public List<Map<String, Object>> getAllBookings(HttpSession session) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        if (ownerId == null) {
+            return new ArrayList<>();
+        }
+
+        List<Booking> bookings = bookingService.getBookingsByCourtOwnerId(ownerId);
+        return convertBookingsToResponse(bookings);
+    }
+
+    @GetMapping("/danhchochusan/api/bookings/get-week-info")
+    @ResponseBody
+    public Map<String, Object> getWeekInfo(@RequestParam String date) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            LocalDate localDate = LocalDate.parse(date);
+
+            LocalDate startOfWeek = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate endOfWeek = localDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+            WeekFields weekFields = WeekFields.of(Locale.getDefault());
+            int weekNumber = localDate.get(weekFields.weekOfWeekBasedYear());
+
+            result.put("startDate", startOfWeek.toString());
+            result.put("endDate", endOfWeek.toString());
+            result.put("year", localDate.getYear());
+            result.put("week", weekNumber);
+
+            return result;
+        } catch (Exception e) {
+            logger.error("Error parsing date: {}", e.getMessage());
+            result.put("error", "Lỗi định dạng ngày: " + e.getMessage());
+            return result;
+        }
+    }
+
+    @GetMapping("/danhchochusan/api/bookings/get-month-info")
+    @ResponseBody
+    public Map<String, Object> getMonthInfo(@RequestParam String date) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            LocalDate localDate = LocalDate.parse(date);
+
+            result.put("year", localDate.getYear());
+            result.put("month", localDate.getMonthValue());
+
+            return result;
+        } catch (Exception e) {
+            logger.error("Error parsing date: {}", e.getMessage());
+            result.put("error", "Lỗi định dạng ngày: " + e.getMessage());
+            return result;
+        }
+    }
+
+    @GetMapping("/danhchochusan/api/bookings/filter-by-date")
+    @ResponseBody
+    public List<Map<String, Object>> filterBookingsByDate(@RequestParam String date, HttpSession session) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        if (ownerId == null) {
+            return new ArrayList<>();
+        }
+
+        try {
+            LocalDate filterDate = LocalDate.parse(date);
+
+            List<Booking> allBookings = bookingService.getBookingsByCourtOwnerId(ownerId);
+
+            List<Booking> filteredBookings = allBookings.stream()
+                .filter(booking -> {
+                    LocalDate bookingDate = extractBookingDate(booking);
+                    return bookingDate != null && bookingDate.equals(filterDate);
+                })
+                .collect(Collectors.toList());
+
+            return convertBookingsToResponse(filteredBookings);
+        } catch (Exception e) {
+            logger.error("Error filtering bookings by date: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @GetMapping("/danhchochusan/api/bookings/filter-by-week")
+    @ResponseBody
+    public List<Map<String, Object>> filterBookingsByWeek(@RequestParam int year, @RequestParam int week, HttpSession session) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        if (ownerId == null) {
+            return new ArrayList<>();
+        }
+
+        try {
+            List<Booking> allBookings = bookingService.getBookingsByCourtOwnerId(ownerId);
+            WeekFields weekFields = WeekFields.of(Locale.getDefault());
+
+            List<Booking> filteredBookings = allBookings.stream()
+                .filter(booking -> {
+                    LocalDate bookingDate = extractBookingDate(booking);
+                    return bookingDate != null && bookingDate.getYear() == year && bookingDate.get(weekFields.weekOfWeekBasedYear()) == week;
+                })
+                .collect(Collectors.toList());
+
+            return convertBookingsToResponse(filteredBookings);
+        } catch (Exception e) {
+            logger.error("Error filtering bookings by week: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @GetMapping("/danhchochusan/api/bookings/filter-by-month")
+    @ResponseBody
+    public List<Map<String, Object>> filterBookingsByMonth(@RequestParam int year, @RequestParam int month, HttpSession session) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        if (ownerId == null) {
+            return new ArrayList<>();
+        }
+
+        try {
+            List<Booking> allBookings = bookingService.getBookingsByCourtOwnerId(ownerId);
+
+            List<Booking> filteredBookings = allBookings.stream()
+                .filter(booking -> {
+                    LocalDate bookingDate = extractBookingDate(booking);
+                    return bookingDate != null && bookingDate.getYear() == year && bookingDate.getMonthValue() == month;
+                })
+                .collect(Collectors.toList());
+
+            return convertBookingsToResponse(filteredBookings);
+        } catch (Exception e) {
+            logger.error("Error filtering bookings by month: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    private LocalDate extractBookingDate(Booking booking) {
+        try {
+            return booking.getBookingDate();
+        } catch (Exception e) {
+            logger.error("Error extracting booking date: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private List<Map<String, Object>> convertBookingsToResponse(List<Booking> bookings) {
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            Map<String, Object> bookingData = new HashMap<>();
+            bookingData.put("id", booking.getId());
+            bookingData.put("customerName", booking.getUser() != null ? booking.getUser().getUsername() : "Unknown");
+            bookingData.put("courtName", booking.getCourt() != null ? booking.getCourt().getName() : "Unknown");
+
+            LocalDate bookingDate = extractBookingDate(booking);
+            bookingData.put("date", bookingDate != null ? bookingDate.toString() : null);
+
+            bookingData.put("timeStart", booking.getTimeSlot() != null ? booking.getTimeSlot().getStartTime() : "Unknown");
+            bookingData.put("timeEnd", booking.getTimeSlot() != null ? booking.getTimeSlot().getEndTime() : "Unknown");
+            bookingData.put("price", booking.getPrice());
+            bookingData.put("status", "Đã xác nhận");
+
+            response.add(bookingData);
+        }
+
+        return response;
     }
 }

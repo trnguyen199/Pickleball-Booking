@@ -4,10 +4,13 @@
 <body>
     <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
     <th:block th:fragment="layout-content">
+
         <div class="wrapper">
+        
           <form action="/profile/update" method="post" th:object="${user}">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" name="id" th:value="*{id}" /> <!-- Thêm trường ẩn cho ID -->
+           
             <div class="wrapper-ct">
               <div class="profile-container">
                 <div class="profile-card">
@@ -31,6 +34,9 @@
 
                 </div>
               </div>
+              <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+              <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+      
               <!-- Lịch sử đặt sân -->
             <div class="history-container">
                 <h2>Lịch sử đặt sân</h2>

@@ -31,7 +31,7 @@ public class Court {
     @OneToMany(mappedBy = "court", cascade = CascadeType.ALL)
     private List<TimeSlot> timeSlots;
     // Getters and Setters
-    
+
     public Long getId() {
         return id;
     }
@@ -71,7 +71,7 @@ public class Court {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-    
+
     public User getCourtOwner() {
         return courtOwner;
     }

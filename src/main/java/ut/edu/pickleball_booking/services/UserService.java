@@ -15,12 +15,12 @@ import ut.edu.pickleball_booking.repositories.UserRepository;
 
 @Service
 public class UserService {
-
+    @Autowired
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
+
     public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -49,13 +49,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // public User updateUser(String userId, UserUpdateRequest request) {
-    //     User user = userRepository.findById(Long.parseLong(userId))
-    //             .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-    //     user.setUsername(request.getUsername());
-    //     user.setEmail(request.getEmail()); // Ensure `email` exists in User entity
-    //     return userRepository.save(user);
-    // }
     public User updateUser(String userId, UserUpdateRequest request) {
         // Tìm người dùng theo ID
         User user = userRepository.findById(Long.parseLong(userId))
@@ -70,6 +63,15 @@ public class UserService {
         user.setAddress(request.getAddress());
 
         return userRepository.save(user);
+    }
+
+    public User getUserByEmail(String email) {
+        System.out.println("Email được truyền vào: " + email);
+        return userRepository.findByEmail(email).orElse(null); // Trả về null nếu không tìm thấy
+    }
+
+    public void updatePasswordUser(User user) {
+        userRepository.save(user); // Lưu thông tin người dùng đã cập nhật
     }
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
@@ -94,7 +96,5 @@ public class UserService {
         return userRepository.findById(ownerId).orElse(null);
     }
 
-//    public User findById(Long ownerId) {
-//    }
 }
 

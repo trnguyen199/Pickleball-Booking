@@ -15,7 +15,13 @@ import ut.edu.pickleball_booking.services.CourtService;
 import ut.edu.pickleball_booking.services.UserService;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/courts")
@@ -23,11 +29,19 @@ public class CourtController {
 
     private final CourtService courtService;
     private final CourtRepository courtRepository;
+    
+    private final String UPLOAD_DIR = "src/main/resources/static/assets/img/elements/";
 
     @Autowired
     public CourtController(CourtService courtService, CourtRepository courtRepository) {
         this.courtService = courtService;
         this.courtRepository = courtRepository;
+        
+        // Đảm bảo thư mục upload tồn tại
+        File uploadDir = new File(UPLOAD_DIR);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
     }
 
     // Endpoint lấy danh sách sân
@@ -54,24 +68,11 @@ public class CourtController {
                                @RequestParam("description") String description,
                                @RequestParam("location") String location,
                                @RequestParam("ownerId") Long ownerId,
-                                HttpSession session,
-                            //    @RequestParam("image") MultipartFile image,
+                               @RequestParam(value = "image", required = false) MultipartFile image,
+                               HttpSession session,
                                RedirectAttributes redirectAttributes) {
         try {
-            // Lưu ảnh
-            // String imageUrl = null;
-            // if (!image.isEmpty()) {
-            //     String uploadDir = "src/main/resources/static/assets/img/elements";
-            //     File uploadDirFile = new File(uploadDir);
-            //     if (!uploadDirFile.exists()) uploadDirFile.mkdirs();
-    
-            //     String fileName = image.getOriginalFilename();
-            //     image.transferTo(new File(uploadDir + "/" + fileName));
-            //     imageUrl = fileName;
-            // }
-    
-            // Lấy User theo ownerId
-
+            // Xác định ownerId nếu chưa được cung cấp
             if (ownerId == null) {
                 ownerId = (Long) session.getAttribute("userId"); // lấy userId từ session
             }
@@ -95,10 +96,33 @@ public class CourtController {
             court.setDescription(description);
             court.setLocation(location);
             court.setCourtOwner(owner); // gán owner cho court
+            
+            // Xử lý upload hình ảnh
+            if (image != null && !image.isEmpty()) {
+                try {
+                    // Lấy tên file gốc thay vì tạo UUID
+                    String originalFilename = image.getOriginalFilename();
+                    
+                    // Tạo đường dẫn đầy đủ tới file
+                    Path targetLocation = Paths.get(UPLOAD_DIR + originalFilename);
+                    
+                    // Copy file vào thư mục đích
+                    Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                    
+                    // Lưu tên file vào đối tượng Court
+                    court.setImageUrl(originalFilename);
+                    
+                    System.out.println("Đã lưu hình ảnh: " + originalFilename);
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi lưu hình ảnh: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
     
             System.out.println("Court Name: " + court.getName());
             System.out.println("Court Location: " + court.getLocation());
             System.out.println("Court Description: " + court.getDescription());
+            System.out.println("Court Image: " + court.getImageUrl());
             System.out.println("Court Owner: " + (court.getCourtOwner() != null ? court.getCourtOwner().getId() : "null"));
     
             // Lưu thông tin sân
@@ -108,19 +132,101 @@ public class CourtController {
             redirectAttributes.addFlashAttribute("success", "Tạo sân thành công!");
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi tạo sân.");
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi tạo sân: " + e.getMessage());
         }
     
         // Chuyển hướng đến trang quản lý sân
         return "redirect:/danhchochusan/manage-courts";
     }
     
-
+    // Hiển thị form chỉnh sửa sân
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Court court = courtRepository.findById(id).orElse(null);
+        
+        if (court == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy sân cần chỉnh sửa");
+            return "redirect:/danhchochusan/manage-courts";
+        }
+        
+        model.addAttribute("court", court);
+        return "manage/edit-court";
+    }
+    
+    @PostMapping("/update/{id}")
+    public String updateCourt(@PathVariable Long id, 
+                              @RequestParam("name") String name,
+                              @RequestParam("description") String description,
+                              @RequestParam("location") String location,
+                              @RequestParam(value = "image", required = false) MultipartFile image,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            Court court = courtRepository.findById(id).orElse(null);
+            if (court == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy sân cần cập nhật");
+                return "redirect:/danhchochusan/manage-courts";
+            }
+            
+            // Cập nhật các thông tin cơ bản
+            court.setName(name);
+            court.setDescription(description);
+            court.setLocation(location);
+            
+            // Xử lý upload hình ảnh mới (nếu có)
+            if (image != null && !image.isEmpty()) {
+                try {
+                    // Xóa hình ảnh cũ nếu có
+                    if (court.getImageUrl() != null && !court.getImageUrl().isEmpty()) {
+                        File oldFile = new File(UPLOAD_DIR + court.getImageUrl());
+                        if (oldFile.exists()) {
+                            oldFile.delete();
+                        }
+                    }
+                    
+                    // Lưu hình ảnh mới với tên file gốc
+                    String originalFilename = image.getOriginalFilename();
+                    
+                    Path targetLocation = Paths.get(UPLOAD_DIR + originalFilename);
+                    Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                    
+                    court.setImageUrl(originalFilename);
+                } catch (IOException e) {
+                    System.err.println("Lỗi khi cập nhật hình ảnh: " + e.getMessage());
+                }
+            }
+            
+            // Lưu các thay đổi
+            courtService.saveCourt(court);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật sân thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sân: " + e.getMessage());
+        }
+        
+        return "redirect:/danhchochusan/manage-courts";
+    }
 
     // Xóa sân
     @PostMapping("/delete/{id}")
-    public String deleteCourt(@PathVariable Long id) {
-        courtService.deleteCourt(id);
+    public String deleteCourt(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            // Xóa hình ảnh sân trước khi xóa sân
+            Court court = courtRepository.findById(id).orElse(null);
+            if (court != null && court.getImageUrl() != null && !court.getImageUrl().isEmpty()) {
+                File imageFile = new File(UPLOAD_DIR + court.getImageUrl());
+                if (imageFile.exists()) {
+                    imageFile.delete();
+                }
+            }
+            
+            // Xóa sân
+            courtService.deleteCourt(id);
+            redirectAttributes.addFlashAttribute("success", "Xóa sân thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa sân: " + e.getMessage());
+        }
+        
         return "redirect:/danhchochusan/manage-courts";
     }
 }

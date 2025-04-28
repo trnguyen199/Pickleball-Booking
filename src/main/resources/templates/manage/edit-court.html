@@ -1,0 +1,111 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<style>
+    .preview-image {
+        max-width: 300px;
+        max-height: 200px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    
+    .image-upload-container {
+        margin-bottom: 15px;
+    }
+    
+    .upload-btn {
+        display: inline-block;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+    
+    .upload-btn:hover {
+        background-color: #e9ecef;
+    }
+</style>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <div class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+        <div class="content-pa">
+            <h1>Chỉnh sửa thông tin sân</h1>
+            
+            <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+            
+            <section id="edit-court">
+                <form class="form-input" th:action="@{/courts/update/{id}(id=${court.id})}" method="post" enctype="multipart/form-data">
+                    <label class="label-set" for="court-name">Tên sân:</label>
+                    <input type="text" id="court-name" name="name" th:value="${court.name}" required>
+                
+                    <label class="label-set" for="court-description">Mô tả:</label>
+                    <textarea id="court-description" name="description" required th:text="${court.description}"></textarea>
+                
+                    <label class="label-set" for="court-location">Vị trí:</label>
+                    <input type="text" id="court-location" name="location" th:value="${court.location}" required>
+                
+                    <div class="image-upload-container">
+                        <label class="label-set" for="court-image">Ảnh sân hiện tại:</label>
+                        <div>
+                            <img th:if="${court.imageUrl != null && !court.imageUrl.isEmpty()}" 
+                                 th:src="@{'/image/' + ${court.imageUrl}}" 
+                                 alt="Hình ảnh sân hiện tại" 
+                                 class="preview-image">
+                            <p th:unless="${court.imageUrl != null && !court.imageUrl.isEmpty()}">Chưa có ảnh</p>
+                        </div>
+                        
+                        <label class="label-set" for="court-image">Cập nhật ảnh mới (không bắt buộc):</label>
+                        <input type="file" id="court-image" name="image" accept="image/*" onchange="previewImage(this)">
+                        <div>
+                            <label class="upload-btn" for="court-image">Chọn hình ảnh</label>
+                            <span id="file-name">Chưa chọn file</span>
+                        </div>
+                        <img id="image-preview" class="preview-image" src="#" alt="Xem trước hình ảnh" style="display: none;">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <a th:href="@{/danhchochusan/manage-courts}" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+    
+    <script>
+        function previewImage(input) {
+            var preview = document.getElementById('image-preview');
+            var fileNameElement = document.getElementById('file-name');
+            
+            if (input.files && input.files[0]) {
+                var fileName = input.files[0].name;
+                fileNameElement.textContent = fileName;
+                
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                fileNameElement.textContent = 'Chưa chọn file';
+            }
+        }
+        
+        // Ẩn input file mặc định và sử dụng nút tùy chỉnh
+        document.addEventListener('DOMContentLoaded', function() {
+            var courtImageInput = document.getElementById('court-image');
+            courtImageInput.style.position = 'absolute';
+            courtImageInput.style.opacity = '0';
+            courtImageInput.style.pointerEvents = 'none';
+        });
+    </script>
+</body>
+</html>

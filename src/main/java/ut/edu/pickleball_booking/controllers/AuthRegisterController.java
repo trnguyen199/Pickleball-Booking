@@ -25,7 +25,14 @@ public class AuthRegisterController {
         return "auth/auth-register"; // Trả về file HTML trong thư mục templates/auth
     }
     @PostMapping("/register-user")
-    public String registerUser(@ModelAttribute UserCreationRequest request, Model model) {
+    public String registerUser(@ModelAttribute UserCreationRequest request,
+                               @RequestParam(value = "terms", required = false) String terms,
+                               Model model) {
+        if (terms == null) {
+            model.addAttribute("errorTerms", "Vui lòng đồng ý điều khoản!!");
+            return "auth/auth-register"; // Quay lại trang đăng ký với thông báo lỗi
+        }
+
         try {
             userService.createUser(request);
             model.addAttribute("success", "Đăng ký thành công!");

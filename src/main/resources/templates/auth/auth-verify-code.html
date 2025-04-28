@@ -1,0 +1,42 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+
+    <div class="container-xxl">
+      <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+          <!-- Verify Code -->
+          <div class="card px-sm-6 px-0">
+            <div class="card-body">
+              <h4 class="mb-1">Xác nhận mã</h4>
+              <p class="mb-6">Nhập mã xác nhận đã được gửi đến email của bạn</p>
+              <form id="formVerifyCode" class="mb-6" action="/verify-code" method="post">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                <div class="mb-3">
+                <div class="mb-6">
+                  <label for="code" class="form-label">Mã xác nhận</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="code"
+                    name="code"
+                    placeholder="Nhập mã xác nhận"
+                    autofocus />
+                </div>
+                <button class="btn btn-primary d-grid w-100">Xác nhận</button>
+              </form>
+              <p th:if="${error}" th:text="${error}" class="text-danger"></p>
+            </div>
+          </div>
+          <!-- /Verify Code -->
+        </div>
+      </div>
+    </div>
+
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>

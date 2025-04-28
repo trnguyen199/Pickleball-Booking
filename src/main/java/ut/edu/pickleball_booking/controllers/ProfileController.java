@@ -85,8 +85,8 @@ public class ProfileController {
             session.setAttribute("username", updatedUser.getUsername() != null && !updatedUser.getUsername().trim().isEmpty()
                     ? updatedUser.getUsername() : updatedUser.getUsername());
             session.setAttribute("user", updatedUser);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin thành công!");
-
+            // Thêm thông báo thành công
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
             // Chuyển hướng về trang chủ
             return "redirect:/profile"; // Sửa từ /trangchu thành / (root path)
         } catch (Exception e) {

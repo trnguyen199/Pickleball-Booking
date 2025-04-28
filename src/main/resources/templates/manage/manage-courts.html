@@ -1,67 +1,139 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
+<style>
+    .preview-image {
+        max-width: 300px;
+        max-height: 200px;
+        margin-top: 10px;
+        display: none;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .image-upload-container {
+        margin-bottom: 15px;
+    }
+
+    .upload-btn {
+        display: inline-block;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+
+    .upload-btn:hover {
+        background-color: #e9ecef;
+    }
+</style>
 <body>
-    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
-    <div class="container-pa">
-        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
-        <div class="content-pa">
-            <h1>Quản lý sân</h1>
-            <section id="court-list">
-                <h2>Danh sách sân</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tên sân</th>
-                            <th>Vị trí</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="court : ${courts}">
-                            <td th:text="${court.name}">Tên sân</td>
-                            <td th:text="${court.location}">Vị trí</td>
+<div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+<div class="container-pa">
+    <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+    <div class="content-pa">
+        <h1>Quản lý sân</h1>
 
-                            <td>
-                                <div class="btn-edit">
-                                    <form th:action="@{/courts/delete/{id}(id=${court.id})}"
-                                      method="post">
-                                    <button type="submit" class="btn delete">Xóa</button>
-                                    </form>
-                                    <form th:action="@{/courts/update/{id}(id=${court.id})}"
-                                        method="post">
-                                        <button type="submit" class="btn edit">Sửa</button>
-                                    </form>
-                                </div>
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-            </section>
-            <section id="create-court">
-                <h2>Tạo mới sân</h2>
-                <form class="form-input" id="create-court-form" th:action="@{/courts/create}" method="post">
-                    <label class="label-set" for="court-name">Tên sân:</label>
-                    <input type="text" id="court-name" name="name" required>
-                
-                    <label class="label-set" for="court-description">Mô tả:</label>
-                    <textarea id="court-description" name="description" required></textarea>
-                
-                    <label class="label-set" for="court-location">Vị trí:</label>
-                    <input type="text" id="court-location" name="location" required>
-                
-                    <!-- <label class="label-set" for="court-image">Ảnh sân:</label>
-                    <input type="file" id="court-image" name="image" accept="image/*"> -->
-                    <input type="hidden" name="ownerId" th:value="${userId}" />
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+        <section id="court-list">
+            <h2>Danh sách sân</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Tên sân</th>
+                    <th>Vị trí</th>
+                    <th>Hình ảnh</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="court : ${courts}">
+                    <td th:text="${court.name}">Tên sân</td>
+                    <td th:text="${court.location}">Vị trí</td>
+                    <td>
+                        <img th:if="${court.imageUrl != null && !court.imageUrl.isEmpty()}"
+                             th:src="@{'/assets/img/elements/' + ${court.imageUrl}}"
+                             alt="Hình ảnh sân"
+                             style="max-width: 100px; max-height: 75px;">
+                        <span th:unless="${court.imageUrl != null && !court.imageUrl.isEmpty()}">Không có ảnh</span>
+                    </td>
+                    <td>
+                        <div class="btn-edit">
+                            <form th:action="@{/courts/delete/{id}(id=${court.id})}"
+                                  method="post">
+                                <button type="submit" class="btn delete">Xóa</button>
+                            </form>
+                            <a th:href="@{/courts/edit/{id}(id=${court.id})}" class="btn edit">Sửa</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-                    <button type="submit">Tạo sân</button>
-                </form>
-            </section>
-        </div>
+        </section>
+        <section id="create-court">
+            <h2>Tạo mới sân</h2>
+            <form class="form-input" id="create-court-form" th:action="@{/courts/create}" method="post" enctype="multipart/form-data">
+                <label class="label-set" for="court-name">Tên sân:</label>
+                <input type="text" id="court-name" name="name" required>
+
+                <label class="label-set" for="court-description">Mô tả:</label>
+                <textarea id="court-description" name="description" required></textarea>
+
+                <label class="label-set" for="court-location">Vị trí:</label>
+                <input type="text" id="court-location" name="location" required>
+
+                <div class="image-upload-container">
+                    <label class="label-set" for="court-image">Ảnh sân:</label>
+                    <input type="file" id="court-image" name="image" accept="image/*" onchange="previewImage(this)">
+                    <div>
+                        <label class="upload-btn" for="court-image">Chọn hình ảnh</label>
+                        <span id="file-name">Chưa chọn file</span>
+                    </div>
+                    <img id="image-preview" class="preview-image" src="#" alt="Xem trước hình ảnh">
+                </div>
+
+                <input type="hidden" name="ownerId" th:value="${userId}" />
+
+                <button type="submit">Tạo sân</button>
+            </form>
+        </section>
     </div>
-    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</div>
+<div th:replace="fragments/_layoutfooter::layout-footer"></div>
+
+<script>
+    function previewImage(input) {
+        var preview = document.getElementById('image-preview');
+        var fileNameElement = document.getElementById('file-name');
+
+        if (input.files && input.files[0]) {
+            var fileName = input.files[0].name;
+            fileNameElement.textContent = fileName;
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+            fileNameElement.textContent = 'Chưa chọn file';
+        }
+    }
+
+    // Ẩn input file mặc định và sử dụng nút tùy chỉnh
+    document.addEventListener('DOMContentLoaded', function() {
+        var courtImageInput = document.getElementById('court-image');
+        courtImageInput.style.position = 'absolute';
+        courtImageInput.style.opacity = '0';
+        courtImageInput.style.pointerEvents = 'none';
+    });
+</script>
 </body>
 </html>

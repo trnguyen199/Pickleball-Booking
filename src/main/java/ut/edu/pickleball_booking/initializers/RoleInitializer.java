@@ -28,5 +28,11 @@ public class RoleInitializer {
             ownerRole.setName("ROLE_OWNER");
             roleRepository.save(ownerRole);
         }
+
+        if (roleRepository.findByName("ROLE_ADMIN").isEmpty()) {
+            Role adminRole = new Role();
+            adminRole.setName("ROLE_ADMIN");
+            roleRepository.save(adminRole);
+        }
     }
 }

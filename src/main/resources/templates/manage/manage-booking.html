@@ -1,6 +1,104 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
+<style>
+    .booking-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    .booking-table th, .booking-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+    
+    .booking-table th {
+        background-color: #f2f2f2;
+        color: #333;
+        font-weight: bold;
+    }
+    
+    .booking-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    .booking-table tr:hover {
+        background-color: #e9f5ff;
+    }
+    
+    .filter-container {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .filter-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .filter-type-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .filter-type-btn {
+        padding: 6px 12px;
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: normal;
+    }
+    
+    .filter-type-btn.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+        font-weight: bold;
+    }
+    
+    .filter-options {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .date-range-display {
+        background-color: #e9ecef;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        display: none;
+    }
+    
+    .status-confirmed {
+        color: #2ecc71;
+        font-weight: bold;
+    }
+    
+    .status-pending {
+        color: #f39c12;
+        font-weight: bold;
+    }
+    
+    .no-bookings {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #777;
+    }
+</style>
 <body>
     <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
     <main class="container-pa">
@@ -9,26 +107,325 @@
 
             <h1>Quản lý đặt sân</h1>
             <section>
-                <label for="filter-date">Chọn ngày:</label>
-                <input type="date" id="filter-date" name="filter-date" onchange="filterBookings()">
+                <div class="filter-container">
+                    <div class="filter-type-selector">
+                        <button type="button" class="filter-type-btn active" data-filter-type="day">Theo ngày</button>
+                        <button type="button" class="filter-type-btn" data-filter-type="week">Theo tuần</button>
+                        <button type="button" class="filter-type-btn" data-filter-type="month">Theo tháng</button>
+                    </div>
+                    
+                    <div class="filter-options" id="filter-day">
+                        <label for="filter-date">Chọn ngày:</label>
+                        <input type="date" id="filter-date" name="filter-date" class="form-control" style="width: auto;">
+                        <button id="btn-filter-day" class="btn btn-primary">Lọc</button>
+                    </div>
+                    
+                    <div class="filter-options" id="filter-week" style="display: none;">
+                        <label for="filter-date-week">Chọn ngày (trong tuần):</label>
+                        <input type="date" id="filter-date-week" name="filter-date-week" class="form-control" style="width: auto;">
+                        <button id="btn-filter-week" class="btn btn-primary">Lọc theo tuần</button>
+                        <div id="week-range-display" class="date-range-display"></div>
+                    </div>
+                    
+                    <div class="filter-options" id="filter-month" style="display: none;">
+                        <label for="filter-date-month">Chọn ngày (trong tháng):</label>
+                        <input type="date" id="filter-date-month" name="filter-date-month" class="form-control" style="width: auto;">
+                        <button id="btn-filter-month" class="btn btn-primary">Lọc theo tháng</button>
+                        <div id="month-range-display" class="date-range-display"></div>
+                    </div>
+                    
+                    <div class="filter-row">
+                        <button id="btn-reset" class="btn btn-secondary">Hiển thị tất cả</button>
+                    </div>
+                </div>
 
-                <table id="booking-table">
+                <div id="loading-indicator" style="text-align: center; padding: 20px; display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                </div>
+
+                <table id="booking-table" class="booking-table">
                     <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Tên khách hàng</th>
-                        <th>Ngày giờ</th>
+                        <th>Tên sân</th>
+                        <th>Ngày</th>
+                        <th>Thời gian bắt đầu</th>
+                        <th>Thời gian kết thúc</th>
+                        <th>Giá tiền</th>
                         <th>Trạng thái</th>
-                        <th>Hành động</th>
                     </tr>
                     </thead>
                     <tbody id="booking-table-body">
                     <!-- Các lượt đặt sân sẽ được hiển thị ở đây -->
                     </tbody>
                 </table>
+                <div id="no-bookings" class="no-bookings" style="display: none;">
+                    Không có lượt đặt sân nào được tìm thấy.
+                </div>
             </section>
 
         </div>
     </main>
     <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+    
+    <script th:inline="javascript">
+        const userId = /*[[${userId}]]*/ null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default dates to today
+            const today = new Date();
+            document.getElementById('filter-date').valueAsDate = today;
+            document.getElementById('filter-date-week').valueAsDate = today;
+            document.getElementById('filter-date-month').valueAsDate = today;
+            
+            // Load bookings when page loads with today's date
+            filterBookingsByDate();
+            
+            // Add event listeners for filter buttons
+            document.getElementById('btn-filter-day').addEventListener('click', filterBookingsByDate);
+            document.getElementById('btn-filter-week').addEventListener('click', filterBookingsByWeek);
+            document.getElementById('btn-filter-month').addEventListener('click', filterBookingsByMonth);
+            document.getElementById('btn-reset').addEventListener('click', loadAllBookings);
+            
+            // Switch between filter types
+            const filterTypeBtns = document.querySelectorAll('.filter-type-btn');
+            filterTypeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterTypeBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Hide all filter options
+                    document.getElementById('filter-day').style.display = 'none';
+                    document.getElementById('filter-week').style.display = 'none';
+                    document.getElementById('filter-month').style.display = 'none';
+                    
+                    // Show selected filter option
+                    const filterType = this.getAttribute('data-filter-type');
+                    document.getElementById('filter-' + filterType).style.display = 'flex';
+                    
+                    // Update week/month range displays if needed
+                    if (filterType === 'week') {
+                        updateWeekRangeDisplay();
+                    } else if (filterType === 'month') {
+                        updateMonthRangeDisplay();
+                    }
+                });
+            });
+            
+            // Add listeners for date inputs in week and month filters
+            document.getElementById('filter-date-week').addEventListener('change', updateWeekRangeDisplay);
+            document.getElementById('filter-date-month').addEventListener('change', updateMonthRangeDisplay);
+            
+            // Initialize range displays
+            updateWeekRangeDisplay();
+            updateMonthRangeDisplay();
+        });
+        
+        function updateWeekRangeDisplay() {
+            const dateInput = document.getElementById('filter-date-week');
+            if (!dateInput.value) return;
+            
+            fetch(`/danhchochusan/api/bookings/get-week-info?date=${dateInput.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.startDate && data.endDate) {
+                        const display = document.getElementById('week-range-display');
+                        display.textContent = `Tuần từ ${formatDate(data.startDate)} đến ${formatDate(data.endDate)}`;
+                        display.style.display = 'block';
+                    }
+                })
+                .catch(error => console.error('Error fetching week info:', error));
+        }
+        
+        function updateMonthRangeDisplay() {
+            const dateInput = document.getElementById('filter-date-month');
+            if (!dateInput.value) return;
+            
+            fetch(`/danhchochusan/api/bookings/get-month-info?date=${dateInput.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.year && data.month) {
+                        const display = document.getElementById('month-range-display');
+                        const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                                          "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
+                        display.textContent = `${monthNames[data.month - 1]} năm ${data.year}`;
+                        display.style.display = 'block';
+                    }
+                })
+                .catch(error => console.error('Error fetching month info:', error));
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+        
+        function filterBookingsByDate() {
+            const date = document.getElementById('filter-date').value;
+            if (!date) {
+                alert('Vui lòng chọn ngày');
+                return;
+            }
+            
+            showLoadingIndicator();
+            
+            fetch(`/danhchochusan/api/bookings/filter-by-date?date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    hideLoadingIndicator();
+                    displayBookings(data);
+                })
+                .catch(error => {
+                    hideLoadingIndicator();
+                    console.error('Error fetching bookings by date:', error);
+                    showError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+                });
+        }
+        
+        function filterBookingsByWeek() {
+            const date = document.getElementById('filter-date-week').value;
+            if (!date) {
+                alert('Vui lòng chọn ngày');
+                return;
+            }
+            
+            showLoadingIndicator();
+            
+            // Lấy thông tin về tuần từ ngày được chọn
+            fetch(`/danhchochusan/api/bookings/get-week-info?date=${date}`)
+                .then(response => response.json())
+                .then(weekInfo => {
+                    // Sử dụng thông tin tuần để lọc đặt sân
+                    fetch(`/danhchochusan/api/bookings/filter-by-week?year=${weekInfo.year}&week=${weekInfo.week}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoadingIndicator();
+                            displayBookings(data);
+                        })
+                        .catch(error => {
+                            hideLoadingIndicator();
+                            console.error('Error fetching bookings by week:', error);
+                            showError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+                        });
+                })
+                .catch(error => {
+                    hideLoadingIndicator();
+                    console.error('Error calculating week info:', error);
+                    showError('Đã xảy ra lỗi khi tính toán thông tin tuần. Vui lòng thử lại sau.');
+                });
+        }
+        
+        function filterBookingsByMonth() {
+            const date = document.getElementById('filter-date-month').value;
+            if (!date) {
+                alert('Vui lòng chọn ngày');
+                return;
+            }
+            
+            showLoadingIndicator();
+            
+            // Lấy thông tin về tháng từ ngày được chọn
+            fetch(`/danhchochusan/api/bookings/get-month-info?date=${date}`)
+                .then(response => response.json())
+                .then(monthInfo => {
+                    // Sử dụng thông tin tháng để lọc đặt sân
+                    fetch(`/danhchochusan/api/bookings/filter-by-month?year=${monthInfo.year}&month=${monthInfo.month}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoadingIndicator();
+                            displayBookings(data);
+                        })
+                        .catch(error => {
+                            hideLoadingIndicator();
+                            console.error('Error fetching bookings by month:', error);
+                            showError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+                        });
+                })
+                .catch(error => {
+                    hideLoadingIndicator();
+                    console.error('Error calculating month info:', error);
+                    showError('Đã xảy ra lỗi khi tính toán thông tin tháng. Vui lòng thử lại sau.');
+                });
+        }
+        
+        function loadAllBookings() {
+            showLoadingIndicator();
+            
+            fetch('/danhchochusan/api/bookings')
+                .then(response => response.json())
+                .then(data => {
+                    hideLoadingIndicator();
+                    displayBookings(data);
+                })
+                .catch(error => {
+                    hideLoadingIndicator();
+                    console.error('Error fetching all bookings:', error);
+                    showError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.');
+                });
+        }
+        
+        function displayBookings(bookings) {
+            const tableBody = document.getElementById('booking-table-body');
+            const noBookingsElement = document.getElementById('no-bookings');
+            
+            tableBody.innerHTML = '';
+            
+            if (bookings.length === 0) {
+                document.getElementById('booking-table').style.display = 'none';
+                noBookingsElement.style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('booking-table').style.display = 'table';
+            noBookingsElement.style.display = 'none';
+            
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                
+                // Format price
+                const formattedPrice = new Intl.NumberFormat('vi-VN', { 
+                    style: 'currency', 
+                    currency: 'VND' 
+                }).format(booking.price);
+                
+                // Status class
+                const statusClass = booking.status === 'Đã xác nhận' ? 'status-confirmed' : 'status-pending';
+                
+                // Format date if available
+                const bookingDate = booking.date ? formatDate(booking.date) : 'N/A';
+                
+                row.innerHTML = `
+                    <td>${booking.id}</td>
+                    <td>${booking.customerName}</td>
+                    <td>${booking.courtName}</td>
+                    <td>${bookingDate}</td>
+                    <td>${booking.timeStart}</td>
+                    <td>${booking.timeEnd}</td>
+                    <td>${formattedPrice}</td>
+                    <td><span class="${statusClass}">${booking.status}</span></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        function showLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'block';
+        }
+        
+        function hideLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
+        
+        function showError(message) {
+            alert(message);
+        }
+    </script>
 </body>
 </html>

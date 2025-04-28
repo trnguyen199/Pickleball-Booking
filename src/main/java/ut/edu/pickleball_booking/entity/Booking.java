@@ -1,7 +1,7 @@
 package ut.edu.pickleball_booking.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "bookings")
@@ -29,6 +29,9 @@ public class Booking {
 
     @Column(nullable = false)
     private boolean hidden = false;
+    
+    @Column(name = "booking_date")
+    private LocalDate bookingDate;
 
     public Long getId() {
         return id;
@@ -92,5 +95,13 @@ public class Booking {
 
     public void setHidden(Boolean hidden) {
         this.hidden = hidden;
+    }
+    
+    public LocalDate getBookingDate() {
+        return bookingDate;
+    }
+    
+    public void setBookingDate(LocalDate bookingDate) {
+        this.bookingDate = bookingDate;
     }
 }

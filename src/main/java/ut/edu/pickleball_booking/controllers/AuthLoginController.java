@@ -21,7 +21,6 @@ public class AuthLoginController {
         this.authService = authService;
     }
 
-
     @GetMapping("/login")
     public String loginForm() {
         return "auth/auth-login"; // Return login page view
