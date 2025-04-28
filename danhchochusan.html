@@ -1,0 +1,68 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+        <div class="container-pa">
+            <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+            <div class="content-pa">
+                <h1>Quản lý Rút Tiền</h1>
+                <section id="account-info">
+                    <h2>Thông tin tài khoản ngân hàng</h2>
+                    <form th:action="@{/withdrawal/update-info}" method="POST">
+                        <label for="account-name">Tên chủ tài khoản:</label>
+                        <input type="text" id="account-name" name="accountName" required>
+
+                        <label for="account-number">Số tài khoản:</label>
+                        <input type="text" id="account-number" name="accountNumber" required>
+
+                        <label for="bank-name">Ngân hàng:</label>
+                        <input type="text" id="bank-name" name="bankName" required>
+                        
+                        <button type="submit">Cập nhật thông tin</button>
+                    </form>
+                </section>
+
+                <section id="withdraw-money">
+                    <h2>Rút tiền</h2>
+                    <div class="form-group">
+                        <label for="withdraw-amount">Số tiền muốn rút:</label>
+                        <div class="input-group">
+                            <input type="number" 
+                                   id="withdraw-amount" 
+                                   name="withdraw-amount" 
+                                   th:value="${param.amount != null ? param.amount : 100000}" 
+                                   required 
+                                   min="100000" 
+                                   step="100000" 
+                                   class="form-control">
+                        </div>
+                        <small class="text-muted">Số tiền tối thiểu: 100,000 VND</small>
+                    </div>
+
+                    <form th:action="@{/withdrawal/request}" method="post" class="mt-3">
+                        <input type="hidden" name="amount" th:value="${param.amount != null ? param.amount : 100000}">
+                        <button type="submit" class="btn btn-primary">Xác nhận rút tiền</button>
+                    </form>
+                </section>
+
+                <section id="withdrawal-status" th:if="${withdrawalStatus != null}" class="mt-4">
+                    <h2>Trạng thái rút tiền</h2>
+                    <div class="alert" th:classappend="${withdrawalStatus.success ? 'alert-success' : 'alert-info'}">
+                        <p th:text="${withdrawalStatus.message}">Yêu cầu rút tiền của bạn</p>
+                        <p th:if="${withdrawalStatus.amount != null}">
+                            Số tiền: <span th:text="${#numbers.formatDecimal(withdrawalStatus.amount, 0, 'COMMA', 0, 'POINT')}">0</span> VND
+                        </p>
+                        <p>Trạng thái: <span class="badge bg-warning">Đang xử lý</span></p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>
+
+
+

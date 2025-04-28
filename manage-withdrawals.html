@@ -1,0 +1,186 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<style>
+    .withdrawal-status {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+    .badge {
+        padding: 0.5em 1em;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    .bg-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .balance-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .balance-amount {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #28a745;
+    }
+    .input-group {
+        width: 100%;
+    }
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    .withdrawal-history {
+        margin-top: 2rem;
+    }
+    .withdrawal-history table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .withdrawal-history th,
+    .withdrawal-history td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .withdrawal-history th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    .withdrawal-history tr:hover {
+        background-color: #f8f9fa;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .history-date {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+</style>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <main class="container-pa">
+        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+        <div class="content-pa">
+            <div class="balance-display">
+                <h1>Quản lý Rút Tiền</h1>
+                <div class="balance-amount" th:if="${withdrawalAccount != null}">
+                    Số dư: <span th:text="${#numbers.formatDecimal(withdrawalAccount.balance, 0, 'COMMA', 0, 'POINT')}">0</span> VND
+                </div>
+            </div>
+
+            <section id="account-info">
+                <h2>Thông tin tài khoản ngân hàng</h2>
+                <form th:action="@{/withdrawal/update-info}" method="POST">
+                    <label for="account-name">Tên chủ tài khoản:</label>
+                    <input type="text" id="account-name" name="accountName" 
+                           th:value="${withdrawalAccount != null ? withdrawalAccount.accountName : ''}" required>
+
+                    <label for="account-number">Số tài khoản:</label>
+                    <input type="text" id="account-number" name="accountNumber" 
+                           th:value="${withdrawalAccount != null ? withdrawalAccount.accountNumber : ''}" required>
+
+                    <label for="bank-name">Ngân hàng:</label>
+                    <input type="text" id="bank-name" name="bankName" 
+                           th:value="${withdrawalAccount != null ? withdrawalAccount.bankName : ''}" required>
+
+                    <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                </form>
+            </section>
+
+            <section id="withdraw-money">
+                <h2>Rút tiền</h2>
+                <form th:action="@{/withdrawal/request}" method="post" class="mt-3">
+                    <div class="form-group">
+                        <label for="withdraw-amount">Số tiền muốn rút:</label>
+                        <div class="input-group">
+                            <input type="number" 
+                                   id="withdraw-amount" 
+                                   name="amount" 
+                                   th:value="${param.amount != null ? param.amount : 100000}" 
+                                   required 
+                                   min="100000"
+                                   step="100000"
+                                   class="form-control"
+                                   oninput="validateAmount(this)">
+                        </div>
+                        <small class="text-muted">Số tiền tối thiểu: 100,000 VND</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Xác nhận rút tiền</button>
+                </form>
+            </section>
+
+            <section class="withdrawal-history" th:if="${withdrawalHistory != null and not #lists.isEmpty(withdrawalHistory)}">
+                <h2>Lịch sử rút tiền</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ngày yêu cầu</th>
+                            <th>Số tiền</th>
+                            <th>Ngân hàng</th>
+                            <th>Số tài khoản</th>
+                            <th>Tên tài khoản</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="withdrawal : ${withdrawalHistory}">
+                            <td>
+                                <span class="history-date" 
+                                      th:text="${#temporals.format(withdrawal.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                </span>
+                            </td>
+                            <td>
+                                <span th:text="${#numbers.formatDecimal(withdrawal.amount, 0, 'COMMA', 0, 'POINT')}">0</span> VND
+                            </td>
+                            <td th:text="${withdrawal.bankName}">-</td>
+                            <td th:text="${withdrawal.accountNumber}">-</td>
+                            <td th:text="${withdrawal.accountName}">-</td>
+                            <td>
+                                <span class="status-badge" th:text="${withdrawal.status}">Đang xử lý</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+    <script>
+        function validateAmount(input) {
+            let value = parseInt(input.value) || 0;
+            
+            // Round to nearest 100,000
+            value = Math.round(value / 100000) * 100000;
+            
+            // Ensure minimum value
+            if (value < 100000) {
+                value = 100000;
+            }
+            
+            input.value = value;
+        }
+    </script>
+</body>
+</html>
