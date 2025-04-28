@@ -4,29 +4,29 @@ package ut.edu.pickleball_booking.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.List;
-import ut.edu.pickleball_booking.entity.User;
+import java.time.LocalDate;
+import java.util.*;
+
+import ut.edu.pickleball_booking.entity.*;
 import ut.edu.pickleball_booking.repositories.CourtRepository;
 import ut.edu.pickleball_booking.repositories.TimeSlotRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import ut.edu.pickleball_booking.entity.Court;
-import ut.edu.pickleball_booking.entity.Role;
-import ut.edu.pickleball_booking.entity.TimeSlot;
-
 import org.springframework.ui.Model;
 import ut.edu.pickleball_booking.services.UserService;
 import ut.edu.pickleball_booking.services.CourtService;
+import ut.edu.pickleball_booking.services.BookingService;
+import ut.edu.pickleball_booking.services.BookingStatisticsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Controller
 public class DanhChoChuSanController {
@@ -34,13 +34,20 @@ public class DanhChoChuSanController {
     private final CourtService courtService;
     private final CourtRepository courtRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final BookingService bookingService;
+    private final BookingStatisticsService bookingStatisticsService;
+    private static final Logger logger = LoggerFactory.getLogger(DanhChoChuSanController.class);
+
 
     @Autowired
-    public DanhChoChuSanController(UserService userService, CourtService courtService,CourtRepository courtRepository, TimeSlotRepository timeSlotRepository) {
+    public DanhChoChuSanController(UserService userService, CourtService courtService,CourtRepository courtRepository, TimeSlotRepository timeSlotRepository, BookingService bookingService, BookingStatisticsService bookingStatisticsService) {
         this.userService = userService;
         this.courtService = courtService;
         this.courtRepository = courtRepository;
         this.timeSlotRepository = timeSlotRepository;
+        this.bookingService = bookingService;
+        this.bookingStatisticsService = bookingStatisticsService;
+
     }
     
             
@@ -140,20 +147,19 @@ public class DanhChoChuSanController {
     }
 
     @PostMapping("/danhchochusan/manage-timeslots/save")
-    public ResponseEntity<?> saveTimeSlots(@RequestParam List<String> timeSlots) {
-
+    public String saveTimeSlots(@RequestParam List<String> timeSlots, Model model) {
         try {
             for (String timeSlotStr : timeSlots) {
                 String[] parts = timeSlotStr.split("-");
                 if (parts.length != 4) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("Định dạng thời gian không hợp lệ: " + timeSlotStr);
+                    model.addAttribute("error", "Định dạng thời gian không hợp lệ: " + timeSlotStr);
+                    return "redirect:/danhchochusan/manage-timeslots";
                 }
 
                 String startTime = parts[0];
                 String endTime = parts[1];
                 Long courtId = Long.parseLong(parts[2]);
-                int price = Integer.parseInt(parts[3]); 
+                int price = Integer.parseInt(parts[3]);
 
                 Court court = courtRepository.findById(courtId)
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy sân với ID: " + courtId));
@@ -162,23 +168,23 @@ public class DanhChoChuSanController {
                 timeSlot.setStartTime(startTime);
                 timeSlot.setEndTime(endTime);
                 timeSlot.setCourt(court);
-                timeSlot.setPrice(price); 
+                timeSlot.setPrice(price);
 
                 timeSlotRepository.save(timeSlot);
             }
-            return ResponseEntity.ok("Khung giờ đã được lưu thành công!");
+            model.addAttribute("success", "Khung giờ đã được lưu thành công!");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lỗi khi lưu khung giờ: " + e.getMessage());
+            model.addAttribute("error", "Lỗi khi lưu khung giờ: " + e.getMessage());
         }
+        return "redirect:/danhchochusan/manage-timeslots";
     }
 
-    @GetMapping("/danhchochusan/manage-timeslots/get")
-    @ResponseBody
-    public List<TimeSlot> getTimeSlotsByCourt(@RequestParam Long courtId) {
-        return timeSlotRepository.findByCourtId(courtId); 
-    }
+        @GetMapping("/danhchochusan/manage-timeslots/get")
+        @ResponseBody
+        public List<TimeSlot> getTimeSlotsByCourt(@RequestParam Long courtId) {
+            return timeSlotRepository.findByCourtId(courtId); 
+        }
 
 
 
@@ -187,17 +193,101 @@ public class DanhChoChuSanController {
     public String bookings() {
         return "manage/manage-booking"; // Tên template cho trang quản lý đặt sân
     }
-
     @GetMapping("/danhchochusan/statistics")
-    public String statistics() {
-        return "manage/manage-statistics"; // Tên template cho trang thống kê
+    public String statisticsPage() {
+        return "manage/manage-statistics"; // Trả về template cho trang thống kê
+    }
+    @PostMapping("/danhchochusan/update-statistics")
+    @ResponseBody
+    public String updateStatistics() {
+        bookingStatisticsService.updateStatistics();
+        return "Statistics updated successfully";
     }
 
+    @GetMapping("/danhchochusan/statistics-data")
+    @ResponseBody
+    public Map<String, Object> getStatisticsData() {
+        LocalDate today = LocalDate.now();
+
+        BigDecimal dailyRevenue = bookingStatisticsService.getDailyRevenue(today);
+        BigDecimal monthlyRevenue = bookingStatisticsService.getMonthlyRevenue(today.getYear(), today.getMonthValue());
+        BigDecimal yearlyRevenue = bookingStatisticsService.getYearlyRevenue(today.getYear());
+
+        // Log dữ liệu để kiểm tra
+        System.out.println("Daily Revenue: " + dailyRevenue);
+        System.out.println("Monthly Revenue: " + monthlyRevenue);
+        System.out.println("Yearly Revenue: " + yearlyRevenue);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("dailyRevenue", dailyRevenue != null ? dailyRevenue : BigDecimal.ZERO);
+        data.put("monthlyRevenue", monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO);
+        data.put("yearlyRevenue", yearlyRevenue != null ? yearlyRevenue : BigDecimal.ZERO);
+
+        return data;
+    }
+
+    @GetMapping("/danhchochusan/statistics-chart-data")
+    @ResponseBody
+    public Map<String, Object> getStatisticsChartData() {
+        // Dữ liệu mẫu cho 12 tháng
+        List<String> months = Arrays.asList("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12");
+
+        // Lấy dữ liệu doanh thu và số lượt đặt sân từ bảng booking_statistics
+        List<BigDecimal> revenue = new ArrayList<>();
+        List<Integer> bookings = new ArrayList<>();
+
+        for (int month = 1; month <= 12; month++) {
+            BigDecimal monthlyRevenue = bookingStatisticsService.getMonthlyRevenue(2025, month);
+            Integer monthlyBookings = bookingStatisticsService.getMonthlyBookings(2025, month);
+
+            // Log dữ liệu để kiểm tra
+            logger.info("Tháng {}: Doanh thu = {}, Số lượt đặt = {}", month, monthlyRevenue, monthlyBookings);
+
+            // Đảm bảo doanh thu không bị chia nhỏ
+            BigDecimal normalizedRevenue = (monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO);
+
+            revenue.add(normalizedRevenue);
+            bookings.add(monthlyBookings != null ? monthlyBookings : 0);
+        }
+
+        // Trả về dữ liệu dưới dạng JSON
+        Map<String, Object> data = new HashMap<>();
+        data.put("months", months);
+        data.put("revenue", revenue);
+        data.put("bookings", bookings);
+
+        return data;
+    }
     @GetMapping("/danhchochusan/reviews")
-    public String reviews() {
-        return "manage/manage-reviews"; // Tên template cho trang đánh giá
+    public String reviews(@RequestParam(value = "courtId", required = false) Long courtId, HttpSession session, Model model) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        List<Court> courts = courtService.getCourtsByOwnerId(ownerId);
+        model.addAttribute("courts", courts);
+
+        if (courtId == null && !courts.isEmpty()) {
+            courtId = courts.get(0).getId();
+        }
+        model.addAttribute("selectedCourtId", courtId);
+
+        // Lấy tất cả review (không lọc hidden)
+        List<Booking> reviews = bookingService.getReviewsByCourtId(courtId);
+        model.addAttribute("reviews", reviews);
+
+        return "manage/manage-reviews";
+    }
+    @PostMapping("/danhchochusan/reviews/hide")
+    public String hideReview(@RequestParam("bookingId") Long bookingId,
+                             @RequestParam("courtId") Long courtId) {
+        bookingService.hideReview(bookingId);
+        return "redirect:/danhchochusan/reviews?courtId=" + courtId;
     }
 
+    @PostMapping("/danhchochusan/reviews/unhide")
+    public String unhideReview(@RequestParam("bookingId") Long bookingId,
+                               @RequestParam("courtId") Long courtId) {
+        bookingService.unhideReview(bookingId);
+        return "redirect:/danhchochusan/reviews?courtId=" + courtId;
+    }
     @GetMapping("/danhchochusan/withdrawals")
     public String withdrawals() {
         return "manage/manage-withdrawals"; // Tên template cho trang rút tiền

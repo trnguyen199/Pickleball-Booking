@@ -27,41 +27,161 @@
                   <div><strong>Địa chỉ:</strong> <input type="text" name="address" th:value="*{address}" /></div>
         
                   <button type="submit" onclick="showToast()">💾 Lưu thay đổi</button>
-                  <a th:href="@{/logout}" class="btn btn-outline-danger">Đăng xuất</a>
+                  <a th:href="@{/logout}" class="btn-logout">Đăng xuất</a>
 
                 </div>
               </div>
               <!-- Lịch sử đặt sân -->
-              <div class="history-container">
+            <div class="history-container">
                 <h2>Lịch sử đặt sân</h2>
                 <table class="history-table">
-                  <thead>
+                    <thead>
                     <tr>
-                      <th>Tên sân</th>
-                      <th>Địa chỉ</th>
-                      <th>Khung giờ đã đặt</th>
-                      <th>Số tiền</th>
-                      <th>Đánh giá</th>
+                        <th>Tên sân</th>
+                        <th>Địa chỉ</th>
+                        <th>Khung giờ đã đặt</th>
+                        <th>Số tiền</th>
+                        <th>Đánh giá</th>
                     </tr>
-                  </thead>
-                  <tbody>
-                    <!-- Ví dụ 1 dòng -->
-                    <tr>
-                      <td>Sân A</td>
-                      <td>123 Đường ABC, TP.HCM</td>
-                      <td>7:00 - 9:00</td>
-                      <td>500.000₫</td>
-                      <td><button class="review-btn">Đánh giá</button></td>
+                    </thead>
+                    <tbody>
+                    <tr th:each="booking : ${bookings}">
+                        <td th:text="${booking.court.name}">Tên sân</td>
+                        <td th:text="${booking.court.location}">Địa chỉ</td>
+                        <td th:text="${booking.timeSlot.startTime + ' - ' + booking.timeSlot.endTime}">Khung giờ</td>
+                        <td th:text="${booking.price} + '₫'">Số tiền</td>
+                        <td>
+                    <span th:if="${booking.review != null}">
+                      <span th:text="${booking.review}"></span>
+                      <span th:if="${booking.rating != null}">
+                        (<span th:text="${booking.rating}"></span>⭐)
+                      </span>
+                      <button class="review-btn" disabled style="opacity:0.5;cursor:not-allowed;">Đã đánh giá</button>
+                    </span>
+                            <button th:if="${booking.review == null}" class="review-btn" type="button"
+                                    th:attr="onclick=|showReviewForm('${booking.id}')|">Đánh giá</button>
+                        </td>
                     </tr>
-                    <!-- Dòng khác sẽ lặp ở đây (bạn sẽ dùng Thymeleaf để lặp) -->
-                  </tbody>
+                    <!-- Dòng khác sẽ lặp ở đây -->
+                    </tbody>
                 </table>
-              </div>
             </div>
           </form>
+            <!-- Form đánh giá ẩn (đặt ngoài form cập nhật thông tin cá nhân) -->
+        <div id="reviewModal" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px #0003;">
+            <form method="post" th:action="@{/profile/review}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="bookingId" id="reviewBookingId">
+                <label>Chọn số sao:</label>
+                <div id="star-rating">
+                    <input type="radio" name="rating" value="1" required> 1⭐
+                    <input type="radio" name="rating" value="2"> 2⭐
+                    <input type="radio" name="rating" value="3"> 3⭐
+                    <input type="radio" name="rating" value="4"> 4⭐
+                    <input type="radio" name="rating" value="5"> 5⭐
+                </div>
+                <label for="reviewContent">Nhập đánh giá:</label>
+                <textarea name="review" id="reviewContent" required></textarea>
+                <br>
+                <button type="submit">Gửi</button>
+                <button type="button" onclick="closeReviewForm()">Hủy</button>
+            </form>
+        </div>
         </div>
     </th:block>
     <div th:replace="fragments/_layoutfooter::layout-footer"></div>
 
 </body>
+<style>
+    /* Tiêu đề bảng */
+    .history-table th {
+        color: #000000; /* Màu đen */
+        font-weight: bold; /* Đậm chữ */
+        text-align: center; /* Căn giữa nội dung */
+    }
+    /* Lịch sử đặt sân container */
+    .history-container {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f8f9fa; /* Màu nền nhạt */
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+    }
+
+    /* Tiêu đề */
+    .history-container h2 {
+        text-align: center;
+        font-size: 1.8rem;
+        color: #343a40; /* Màu chữ đậm */
+        margin-bottom: 20px;
+    }
+
+    /* Bảng */
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+        text-align: left;
+    }
+
+    .history-table thead {
+        background-color: #343a40; /* Màu nền tiêu đề bảng */
+        color: #ffffff; /* Màu chữ tiêu đề bảng */
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 12px 15px;
+        border: 1px solid #dee2e6; /* Đường viền bảng */
+    }
+
+    .history-table tbody tr:nth-child(even) {
+        background-color: #f1f3f5; /* Màu nền cho hàng chẵn */
+    }
+
+    .history-table tbody tr:hover {
+        background-color: #e9ecef; /* Hiệu ứng hover */
+        transition: background-color 0.3s ease;
+    }
+
+    /* Nút đánh giá */
+    .review-btn {
+        background-color: #007bff; /* Màu xanh dương */
+        color: #ffffff; /* Màu chữ trắng */
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .review-btn:hover {
+        background-color: #0056b3; /* Màu xanh đậm hơn khi hover */
+        transition: background-color 0.3s ease;
+    }
+    .btn-logout {
+        background-color: #ff4d4f; /* màu đỏ nhẹ */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .btn-logout:hover {
+        background-color: #d9363e; /* đậm hơn khi hover */
+        color: #000;
+      }
+</style>
+<script>
+    function showReviewForm(bookingId) {
+        document.getElementById('reviewBookingId').value = bookingId;
+        document.getElementById('reviewModal').style.display = 'block';
+    }
+    function closeReviewForm() {
+        document.getElementById('reviewModal').style.display = 'none';
+    }
+</script>
 </html>

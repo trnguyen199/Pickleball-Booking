@@ -24321,7 +24321,7 @@ section label {
 
 .wrapper-ct {
   max-width: 1000px;
-  margin: 20px auto;
+  margin: 100px auto;
   padding: 20px;
 }
 
@@ -24376,11 +24376,11 @@ button[type="submit"] {
 }
 
 .history-table th {
-  background-color: #f2f2f2;
+  background-color: #6FC7E1;
+  color: white;
 }
-
 .review-btn {
-  background-color: #007bff;
+  background-color: #00819d;
   color: white;
   border: none;
   padding: 8px 12px;

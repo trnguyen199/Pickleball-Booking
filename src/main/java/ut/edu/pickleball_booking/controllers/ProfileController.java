@@ -7,17 +7,28 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import ut.edu.pickleball_booking.dto.request.UserUpdateRequest;
 import ut.edu.pickleball_booking.entity.User;
+import ut.edu.pickleball_booking.entity.Booking;
 import ut.edu.pickleball_booking.services.UserService;
+import ut.edu.pickleball_booking.services.BookingService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 public class ProfileController {
 
     private final UserService userService;
+
+    @Autowired
+    private BookingService bookingService;
+
+    @Autowired
+    private ut.edu.pickleball_booking.repositories.BookingRepository bookingRepository;
 
     public ProfileController(UserService userService) {
         this.userService = userService;
@@ -39,13 +50,14 @@ public class ProfileController {
         User user = userService.findByUsername(username);
         if (user != null) {
             model.addAttribute("user", user);
+            // Lấy lịch sử đặt sân
+            model.addAttribute("bookings", bookingService.getBookingsByUsername(username));
         } else {
             model.addAttribute("error", "Không tìm thấy thông tin người dùng.");
         }
         return "public/profile";
     }
 
-    // Các phương thức khác nếu cần thiết
     @PostMapping("/profile/update")
     public String updateProfile(@ModelAttribute User updateUser, HttpSession session, RedirectAttributes redirectAttributes) {
         System.out.println("\n\n======== START PROFILE UPDATE ========");
@@ -84,6 +96,19 @@ public class ProfileController {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi cập nhật thông tin: " + e.getMessage());
             return "redirect:/profile";
         }
+    }
+
+    @PostMapping("/profile/review")
+    public String submitReview(
+            @RequestParam("bookingId") Long bookingId,
+            @RequestParam("rating") Integer rating,
+            @RequestParam("review") String review
+    ) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        booking.setRating(rating);
+        booking.setReview(review);
+        bookingRepository.save(booking);
+        return "redirect:/profile";
     }
 }
 

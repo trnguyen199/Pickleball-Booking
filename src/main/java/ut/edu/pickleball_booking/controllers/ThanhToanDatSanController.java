@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 public class ThanhToanDatSanController {
 
-    @GetMapping("danhsachsan/thanhtoan")
+    @GetMapping("danhsachsan/datsan/thanhtoan")
     public String getLienhe() {
         return "master/thanhtoan"; 
     }

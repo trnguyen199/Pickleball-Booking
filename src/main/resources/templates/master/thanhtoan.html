@@ -5,14 +5,67 @@
     <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
       <th:block th:fragment="layout-content">
         <main class="form-thanhtoan">
-          <div id="booking-info"></div>
-          <main class="form-thanhtoan">
-            <h2>Thông tin thanh toán</h2>
-            <p>Gói đăng ký đã chọn: <strong th:text="${selectedPlan}"></strong></p>
+          <div id="booking-info">
+          </div>
+          <button id="confirm-payment" class="btn-confirm">Thanh toán</button>
         </main>
-        <button id="confirm-payment" class="btn-confirm">Xác nhận đã thanh toán</button>
+
+
       </th:block>
     </div>
     <div th:replace="fragments/_layoutfooter::layout-footer"></div>
 </body>
 </html>
+<script>
+  const bookingData = JSON.parse(localStorage.getItem('bookingData'));
+
+  if (!bookingData || !bookingData.slots || bookingData.slots.length === 0) {
+      document.getElementById('booking-info').innerHTML = '<p>Không có khung giờ nào được chọn.</p>';
+  } else {
+      const bookingInfoDiv = document.getElementById('booking-info');
+      let html = '<h3>Thông tin đặt sân</h3>';
+      html += '<ul>';
+      bookingData.slots.forEach(slot => {
+          html += `<li>${slot.day} - ${slot.time}: ${slot.price.toLocaleString()} đ</li>`;
+      });
+      html += '</ul>';
+      html += `<p><strong>Tổng tiền:</strong> ${bookingData.total.toLocaleString()} đ</p>`;
+      bookingInfoDiv.innerHTML = html;
+  }
+  
+  // Xử lý khi nhấn nút thanh toán
+  document.getElementById('confirm-payment').addEventListener('click', async function () {
+    const bookingData = JSON.parse(localStorage.getItem('bookingData'));
+
+    if (!bookingData || !bookingData.total) {
+        alert('Không có thông tin thanh toán.');
+        return;
+    }
+
+    const amount = bookingData.total * 100; // Nhân với 100 để chuyển sang đơn vị của VNPAY
+
+    try {
+        const response = await fetch(`/api/payment/create_payment?amount=${amount}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Received response:", data);
+            if (data.status === 'OK') {
+                window.location.href = data.URL; // Chuyển hướng đến URL thanh toán
+            } else {
+                alert('Có lỗi xảy ra: ' + data.message);
+            }
+        } else {
+            alert('Không thể thực hiện thanh toán. Vui lòng thử lại.');
+        }
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Có lỗi xảy ra khi thực hiện thanh toán.');
+    }
+});
+</script>

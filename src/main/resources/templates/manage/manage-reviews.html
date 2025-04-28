@@ -2,26 +2,130 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
 <body>
-    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
-    <main class="container-pa">
-        <div th:replace="fragments/_layoutsidebar::sidebar"></div>
-
+<div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+<div class="container-pa">
+    <div th:replace="fragments/_layoutsidebar::sidebar"></div>
+    <div class="content-pa">
         <h1>Quản lý Đánh giá Khách hàng</h1>
-        <section id="reviews">
-            <h2>Đánh giá từ khách hàng</h2>
-            <div class="review">
-                <div class="review-header">
-                    <span class="review-name">Nguyễn Văn A</span>
-                    <span class="review-date">18/04/2025</span>
-                </div>
-                <div class="review-content">
-                    <p class="review-text">Sân đẹp, sạch sẽ, nhân viên thân thiện. Tôi sẽ quay lại lần sau!</p>
-                    <div class="review-rating">⭐⭐⭐⭐⭐</div>
-                </div>
-                <button class="delete-btn">Xóa</button>
-            </div>
+        <section id="reviews-section">
+            <form method="get" th:action="@{/danhchochusan/reviews}" style="margin-bottom: 24px;">
+                <label for="courtId">Chọn sân:</label>
+                <select name="courtId" id="courtId" onchange="this.form.submit()">
+                    <option th:each="court : ${courts}"
+                            th:value="${court.id}"
+                            th:text="${court.name}"
+                            th:selected="${court.id} == ${selectedCourtId}">
+                    </option>
+                </select>
+            </form>
+
         </section>
-    </main>
-    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+        <div class="review-box">
+            <h3>Đánh giá của khách hàng</h3>
+            <div th:if="${#lists.isEmpty(reviews)}">
+                <p>Chưa có đánh giá nào cho sân này.</p>
+            </div>
+            <div th:if="${!#lists.isEmpty(reviews)}">
+                <ul class="review-list">
+                    <li th:each="review : ${reviews}" class="review-card">
+                        <div class="review-header">
+                            <strong th:text="${review.user.fullName}" class="review-user">Tên khách</strong>
+                            <span class="review-rating" th:if="${review.rating != null}">
+                                    <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span>
+                                </span>
+                        </div>
+                        <div class="review-content" th:text="${review.review}">Nội dung đánh giá</div>
+                        <div class="review-actions">
+                            <th:block th:if="${!review.hidden}">
+                                <form th:action="@{/danhchochusan/reviews/hide}" method="post" style="display:inline;">
+                                    <input type="hidden" name="bookingId" th:value="${review.id}" />
+                                    <input type="hidden" name="courtId" th:value="${selectedCourtId}" />
+                                    <button type="submit" class="delete-btn">Ẩn đánh giá</button>
+                                </form>
+                            </th:block>
+                            <th:block th:if="${review.hidden}">
+                                <span class="review-hidden-label">Đã ẩn</span>
+                                <form th:action="@{/danhchochusan/reviews/unhide}" method="post" style="display:inline;">
+                                    <input type="hidden" name="bookingId" th:value="${review.id}" />
+                                    <input type="hidden" name="courtId" th:value="${selectedCourtId}" />
+                                    <button type="submit" class="unhide-btn">Hiện lại</button>
+                                </form>
+                            </th:block>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/_layoutfooter::layout-footer"></div>
 </body>
+<style>
+    .review-box {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 32px 32px 24px 32px;
+        margin-top: 24px;
+        margin-bottom: 32px;
+        max-width: 900px;
+    }
+    .review-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .review-card {
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 18px 20px 12px 20px;
+        border: 1px solid #e0e0e0;
+    }
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+    .review-user {
+        font-weight: 600;
+        color: #1976d2;
+    }
+    .review-rating {
+        color: #ffc107;
+        font-size: 1.1em;
+    }
+    .review-content {
+        margin: 8px 0 0 0;
+        color: #333;
+    }
+    .review-actions {
+        margin-top: 10px;
+    }
+    .delete-btn, .unhide-btn {
+        padding: 6px 18px;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        font-weight: 500;
+        cursor: pointer;
+        background: #e53935;
+        transition: background 0.2s;
+    }
+    .delete-btn:hover {
+        background: #b71c1c;
+    }
+    .unhide-btn {
+        background: #43a047;
+    }
+    .unhide-btn:hover {
+        background: #2e7031;
+    }
+    .review-hidden-label {
+        color: #888;
+        font-style: italic;
+        margin-right: 10px;
+    }
+</style>
 </html>
