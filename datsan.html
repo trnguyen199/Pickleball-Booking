@@ -1,0 +1,360 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+        <div class="container-booking">
+        
+          <div class="nav-controls">
+            <span><button class="today-btn">Hôm nay</button></span>
+
+            <div id="current-week"></div>
+            <div class="view-toggle">
+              <button>Tuần sau</button>
+            </div>
+          </div>
+        
+          <div class="booking-wrapper">
+            <table>
+              <thead>
+                <tr id="week-header">
+                  <th>Khung giờ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="timeSlot : ${timeSlots}">
+                  <td class="time-col" th:text="${timeSlot.startTime} + ' - ' + ${timeSlot.endTime}"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+                  <td class="price-cell" th:text="${timeSlot.price} + ' đ'"></td>
+              </tr>
+            </tbody>
+            </table>
+            <button class="btn-datsan btn btn-primary" style="margin: 0 auto;">Đặt sân</button>
+        </div>
+        <!-- Hiển thị đánh giá của sân -->
+        <div class="court-reviews" style="margin-top: 40px;">
+          <h3>Đánh giá của khách hàng</h3>
+          <div class="review-box">
+              <!-- Hiển thị trung bình sao -->
+              <div class="average-rating" th:if="${!#lists.isEmpty(reviews)}">
+                  <span class="average-stars">
+                      <span th:each="i : ${#numbers.sequence(1, averageRating)}">★</span>
+                      <span th:each="i : ${#numbers.sequence(1, 5 - averageRating)}" style="color: #ddd;">★</span>
+                  </span>
+                  <span class="average-text" th:text="'Trung bình: ' + ${averageRating} + '/5 sao'"></span>
+              </div>
+
+              <div th:if="${#lists.isEmpty(reviews)}">
+                  <p>Chưa có đánh giá nào cho sân này.</p>
+              </div>
+              <div th:if="${!#lists.isEmpty(reviews)}">
+                  <ul class="review-list">
+                      <li th:each="review : ${reviews}" class="review-card">
+                          <div class="review-header">
+                              <strong th:text="${review.user.fullName}" class="review-user">Tên khách</strong>
+                              <span class="review-rating" th:if="${review.rating != null}">
+                                  <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span>
+                              </span>
+                          </div>
+                          <div class="review-content" th:text="${review.review}">Nội dung đánh giá</div>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+        </div>
+        </div>
+    </th:block>
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+
+</body>
+<style>
+
+
+    .booking-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1000px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #6FC7E1;
+    }
+
+    .time-col {
+      background-color: #f9f9f9;
+      font-weight: bold;
+    }
+
+    .today-btn {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+      margin-top: 100px;
+    }
+
+    .view-toggle button {
+      margin-left: 8px;
+      padding: 5px 10px;
+    }
+
+    .price-cell {
+      background-color: #fefefe;
+      border-radius: 4px;
+    }
+    .selected {
+      background-color: rgba(0, 255, 0, 0.3);
+    }
+    .disabled {
+      background-color: #eee;
+      color: #999;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* Khung chứa toàn bộ phần đánh giá */
+    .review-box {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        padding: 24px 32px;
+        margin-top: 16px;
+        max-width: 800px;
+    }
+
+    /* Trung bình sao */
+    .average-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #333;
+    }
+    .average-stars {
+        color: #ffc107;
+        font-size: 1.5em;
+    }
+
+    /* Danh sách đánh giá */
+    .review-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Từng đánh giá */
+    .review-card {
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        padding: 16px 20px;
+        border: 1px solid #e0e0e0;
+    }
+
+    /* Header của đánh giá */
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    /* Tên người dùng */
+    .review-user {
+        font-weight: 600;
+        color: #1976d2;
+    }
+
+    /* Xếp hạng sao */
+    .review-rating {
+        color: #ffc107;
+        font-size: 1.1em;
+    }
+
+    /* Nội dung đánh giá */
+    .review-content {
+        margin: 8px 0 0 0;
+        color: #333;
+    }
+  </style>
+
+  <script>
+    const priceCells = document.querySelectorAll('.price-cell');
+    const bookingBtn = document.querySelector('.btn-datsan');
+    let selectedSlots = [];
+  
+    priceCells.forEach(cell => {
+      cell.addEventListener('click', function () {
+        const row = this.closest('tr');
+        const time = row.querySelector('.time-col').innerText;
+  
+        // Lấy vị trí cột hiện tại
+        const colIndex = Array.from(row.children).indexOf(this);
+  
+        // Lấy đúng tiêu đề ngày từ thead (bỏ cột đầu tiên là "Thời gian")
+        const day = document.querySelectorAll('thead th')[colIndex].innerText.trim();
+  
+        const priceText = this.innerText.trim();
+        const price = parseInt(priceText.replace(/\D/g, '')) || 0;
+  
+        const slot = { time, day, price };
+  
+        const index = selectedSlots.findIndex(
+          item => item.time === time && item.day === day
+        );
+  
+        if (this.classList.contains('selected')) {
+          this.classList.remove('selected');
+          if (index !== -1) selectedSlots.splice(index, 1);
+        } else {
+          this.classList.add('selected');
+          if (index === -1) selectedSlots.push(slot);
+        }
+  
+        console.log('Selected Slots:', selectedSlots);
+      });
+    });
+  
+    // Xử lý khi nhấn nút đặt sân
+    bookingBtn.addEventListener('click', function () {
+      if (selectedSlots.length === 0) {
+        alert('Vui lòng chọn ít nhất một khung giờ.');
+        return;
+      }
+  
+      const total = selectedSlots.reduce((sum, s) => sum + s.price, 0);
+      const bookingData = {
+        slots: selectedSlots,
+        total: total
+      };
+  
+      localStorage.setItem('bookingData', JSON.stringify(bookingData));
+      window.location.href = '/danhsachsan/thanhtoan';
+    });
+
+
+    //week hiện tại 
+    function formatVietnameseDate(date) {
+        const options = { day: '2-digit', month: 'long', year: 'numeric' };
+        return date.toLocaleDateString('vi-VN', options);
+    }
+
+    function getWeekRange() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 (Chủ nhật) - 6 (Thứ Bảy)
+        const mondayOffset = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek); // Nếu Chủ nhật thì -6, còn lại tính offset đến thứ 2
+        const sundayOffset = (dayOfWeek === 0 ? 0 : 7 - dayOfWeek);
+
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + mondayOffset);
+
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() + sundayOffset);
+
+        return `< ${formatVietnameseDate(monday)} - ${formatVietnameseDate(sunday)} >`;
+    }
+
+    document.getElementById("current-week").innerHTML = getWeekRange();
+
+
+    //Thứ ngày hiện tại
+    const weekdays = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+
+    function getWeekDates() {
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 (Chủ nhật) - 6 (Thứ Bảy)
+
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // Lùi về thứ Hai
+
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        days.push(d);
+      }
+
+      return days;
+    }
+
+    function formatDayVN(date) {
+      const weekday = weekdays[date.getDay()];
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      return `${weekday} ${day}/${month}`;
+    }
+
+    const headerRow = document.getElementById("week-header");
+    const weekDates = getWeekDates();
+
+    weekDates.forEach(date => {
+      const th = document.createElement("th");
+      th.textContent = formatDayVN(date);
+      headerRow.appendChild(th);
+    });
+
+
+    //disable lịch đặt 
+    function disablePastDates() {
+      const today = new Date();
+      const todayDate = today.getDate(); // ngày hiện tại (VD: 25)
+  
+      const weekDates = []; // sẽ lưu ngày tương ứng với từng cột
+      const dayOfWeek = today.getDay();
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // lùi về thứ Hai
+  
+      // tạo mảng chứa ngày của từng cột (từ Thứ Hai → Chủ Nhật)
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        weekDates.push(d.getDate()); // chỉ lấy ngày (1 → 31)
+      }
+  
+      // chọn tất cả hàng trong bảng
+      const rows = document.querySelectorAll("table tbody tr");
+      rows.forEach(row => {
+        const tds = row.querySelectorAll("td");
+  
+        // bỏ qua ô đầu tiên (cột thời gian), chỉ xử lý từ thứ 2 → CN (td[1] đến td[7])
+        for (let i = 1; i <= 7; i++) {
+          const cell = tds[i];
+          const cellDate = weekDates[i - 1];
+  
+          if (cellDate < todayDate) {
+            cell.classList.add("disabled");
+          }
+        }
+      });
+    }
+  
+    window.onload = disablePastDates;
+  </script>
+  
+  
+</html>
