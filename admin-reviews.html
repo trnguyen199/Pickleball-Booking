@@ -1,0 +1,97 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+<div class="container-pa">
+    <div th:replace="fragments/_layoutsidebaradmin::sidebar-admin"></div>
+    <div class="content-pa">
+        <h1>Quản lý Đánh giá Sân</h1>
+        <section id="reviews-section">
+            <form method="get" th:action="@{/admin/admin-reviews}" style="margin-bottom: 24px;">
+                <label for="ownerId">Chọn chủ sân:</label>
+                <select name="ownerId" id="ownerId" onchange="this.form.submit()">
+                    <option value="">--Chọn chủ sân--</option>
+                    <option th:each="owner : ${owners}"
+                            th:value="${owner.id}"
+                            th:text="${owner.fullName}"
+                            th:selected="${owner.id} == ${selectedOwnerId}">
+                    </option>
+                </select>
+                <label for="courtId" style="margin-left: 24px;">Chọn sân:</label>
+                <select name="courtId" id="courtId" onchange="this.form.submit()">
+                    <option value="">--Chọn sân--</option>
+                    <option th:each="court : ${courts}"
+                            th:value="${court.id}"
+                            th:text="${court.name}"
+                            th:selected="${court.id} == ${selectedCourtId}">
+                    </option>
+                </select>
+            </form>
+        </section>
+        <div class="review-box">
+            <h3>Đánh giá của khách hàng</h3>
+            <div th:if="${#lists.isEmpty(reviews)}">
+                <p>Chưa có đánh giá nào cho sân này.</p>
+            </div>
+            <div th:if="${!#lists.isEmpty(reviews)}">
+                <ul class="review-list">
+                    <li th:each="review : ${reviews}" class="review-card">
+                        <div class="review-header">
+                            <strong th:text="${review.user.fullName}" class="review-user">Tên khách</strong>
+                            <span class="review-rating" th:if="${review.rating != null}">
+                                <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span>
+                            </span>
+                        </div>
+                        <div class="review-content" th:text="${review.review}">Nội dung đánh giá</div>
+                        <!-- Nếu muốn thêm nút Ẩn/Hiện, có thể bổ sung ở đây giống manage-reviews -->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+<style>
+    .review-box {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 32px 32px 24px 32px;
+        margin-top: 24px;
+        margin-bottom: 32px;
+        max-width: 900px;
+    }
+    .review-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .review-card {
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 18px 20px 12px 20px;
+        border: 1px solid #e0e0e0;
+    }
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+    .review-user {
+        font-weight: 600;
+        color: #1976d2;
+    }
+    .review-rating {
+        color: #ffc107;
+        font-size: 1.1em;
+    }
+    .review-content {
+        margin: 8px 0 0 0;
+        color: #333;
+    }
+</style>
+</html>
