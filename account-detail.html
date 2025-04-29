@@ -1,0 +1,31 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+<div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+<div class="container-pa">
+    <div th:replace="fragments/_layoutsidebaradmin::sidebar-admin"></div>
+    <div class="content-pa d-flex justify-content-center align-items-start" style="min-height: 80vh;">
+        <div class="card shadow" style="max-width: 1000px; width: 100%; border-radius: 16px; min-height: 420px;">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Thông tin tài khoản</h3>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item"><strong>Họ và tên:</strong> <span th:text="${user.fullName}"></span></li>
+                    <li class="list-group-item"><strong>Email:</strong> <span th:text="${user.email}"></span></li>
+                    <li class="list-group-item"><strong>Số điện thoại:</strong> <span th:text="${user.phone}"></span></li>
+                    <li class="list-group-item"><strong>Địa chỉ:</strong> <span th:text="${user.address}"></span></li>
+                    <li class="list-group-item"><strong>Ngày sinh:</strong> <span th:text="${user.dob}"></span></li>
+                    <li class="list-group-item"><strong>Vai trò:</strong>
+                        <span th:each="role : ${user.roles}" th:text="${role.name}" class="badge bg-info me-1"></span>
+                    </li>
+                </ul>
+                <div class="text-center position-absolute" style="left:0; right:0; bottom:32px;">
+                    <a th:href="@{/admin/admin-accounts}" class="btn btn-secondary btn-sm">Quay lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/_layoutfooter::layout-footer"></div>
+</body>
+</html>
