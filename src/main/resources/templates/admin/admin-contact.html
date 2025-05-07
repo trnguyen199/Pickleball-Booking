@@ -1,0 +1,307 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head"></head>
+<body>
+    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
+    <th:block th:fragment="layout-content">
+        <div class="container-pa">
+            <div th:replace="fragments/_layoutsidebaradmin::sidebar-admin"></div>
+
+            <div class="layout-page">
+                <div class="content-wrapper">
+                    <div class="container-fluid pb-5">
+                        <h5 class="admin-title">
+                            Quản lý Liên hệ
+                        </h5>
+                        <div class="alerts-container" style="padding: 0 15px;">
+                            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                                <span th:text="${success}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span th:text="${error}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Danh sách các liên hệ từ khách hàng</h5>
+                            </div>
+                            <div class="table-responsive text-nowrap">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>HỌ VÀ TÊN</th>
+                                            <th>EMAIL</th>
+                                            <th>NỘI DUNG</th>
+                                            <th>NGÀY GỬI</th>
+                                            <th>THAO TÁC</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-border-bottom-0">
+                                        <tr th:each="contact : ${contacts}">
+                                            <td th:text="${contact.id}"></td>
+                                            <td th:text="${contact.name}"></td>
+                                            <td th:text="${contact.email}"></td>
+                                            <td th:text="${contact.content}"></td>
+                                            <td th:text="${#temporals.format(contact.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-respond"
+                                                        th:data-contact-id="${contact.id}" 
+                                                        th:data-contact-email="${contact.email}" 
+                                                        th:data-contact-name="${contact.name}"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#replyModal">
+                                                    Phản hồi
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(contacts)}">
+                                            <td colspan="6" class="text-center">Không có dữ liệu liên hệ</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal để gửi phản hồi email -->
+        <div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="replyModalLabel">Gửi phản hồi</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="replyForm" method="post" th:action="@{/admin/admin-contact/reply}">
+                        <!-- CSRF token được tự động thêm bởi Thymeleaf khi sử dụng th:action -->
+                        
+                        <div class="modal-body">
+                            <input type="hidden" id="contactId" name="contactId" />
+                            
+                            <div class="mb-3">
+                                <label for="recipientEmail" class="form-label">Email người nhận</label>
+                                <input type="email" class="form-control" id="recipientEmail" name="recipientEmail" readonly>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="recipientName" class="form-label">Họ và tên người nhận</label>
+                                <input type="text" class="form-control" id="recipientName" name="recipientName" readonly>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="emailSubject" class="form-label">Tiêu đề</label>
+                                <input type="text" class="form-control" id="emailSubject" name="subject" value="Phản hồi từ Pickleball Booking">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="emailContent" class="form-label">Nội dung phản hồi</label>
+                                <textarea class="form-control" id="emailContent" name="content" rows="10" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Gửi phản hồi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    
+    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+    
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Script để xử lý hiển thị thông tin và gửi email -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý khi mở modal phản hồi
+            const buttons = document.querySelectorAll('.btn-respond');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const contactId = this.getAttribute('data-contact-id');
+                    const contactEmail = this.getAttribute('data-contact-email');
+                    const contactName = this.getAttribute('data-contact-name');
+                    
+                    document.getElementById('contactId').value = contactId;
+                    document.getElementById('recipientEmail').value = contactEmail;
+                    document.getElementById('recipientName').value = contactName;
+                    
+                    // Hiển thị modal theo cách thủ công nếu cần
+                    const replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
+                    replyModal.show();
+                });
+            });
+            
+            // Hiển thị thông báo thành công/lỗi nếu có
+            const urlParams = new URLSearchParams(window.location.search);
+            const successMessage = urlParams.get('success');
+            if (successMessage === 'true') {
+                alert('Email phản hồi đã được gửi thành công!');
+            }
+            
+            const errorMessage = urlParams.get('error');
+            if (errorMessage === 'true') {
+                alert('Có lỗi xảy ra khi gửi email phản hồi!');
+            }
+        });
+    </script>
+    
+    <!-- CSS để điều chỉnh giao diện theo yêu cầu -->
+    <style>
+        
+        .container-pa {
+            display: flex;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            margin-top: 62px; /* Khoảng cách từ header */
+        }
+        
+        .layout-page {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 0;
+        }
+        
+        .content-wrapper {
+            width: 100%;
+            padding: 0;
+            background-color: #f5f5f9;
+        }
+        
+        .container-fluid {
+            width: 100%;
+            padding: 20px 0 20px 0; /* Loại bỏ padding bên phải và trái để dịch nội dung sang trái */
+            max-width: none;
+        }
+        
+        /* Chỉnh sửa tiêu đề trang để giống với hình mẫu */
+        .admin-title {
+            font-size: 1.2rem;
+            margin: 0 0 20px 15px; /* Thêm margin-left để tiêu đề không sát quá vào rìa */
+            font-weight: 500;
+            color: #566a7f;
+            padding: 0;
+        }
+        
+        .card {
+            box-shadow: 0 2px 6px rgba(67, 89, 113, 0.12);
+            border-radius: 0.375rem;
+            margin-bottom: 2rem;
+            margin-left: 15px; /* Thêm margin-left cho card để không sát quá vào rìa */
+            margin-right: 15px; /* Thêm margin-right để cân đối */
+            width: calc(100% - 30px); /* Giảm width để phù hợp với margin */
+            border: 0;
+            background-color: #fff;
+        }
+        
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0;
+            background-color: transparent;
+            border-bottom: 1px solid rgba(67, 89, 113, 0.1);
+        }
+        
+        .card-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #566a7f;
+        }
+        
+        .table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #566a7f;
+            background-color: #f5f5f9;
+            font-size: 0.8rem;
+            padding: 0.75rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .table td {
+            padding: 0.75rem 1.25rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+            color: #697a8d;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(67, 89, 113, 0.04);
+        }
+        
+        
+        .btn-respond {
+            background-color: #696cff;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
+            color: #fff;
+        }
+        
+        /* Điều chỉnh độ rộng của các cột */
+        .table th:nth-child(1), 
+        .table td:nth-child(1) {
+            width: 5%;
+        }
+        
+        .table th:nth-child(2), 
+        .table td:nth-child(2) {
+            width: 15%;
+        }
+        
+        .table th:nth-child(3), 
+        .table td:nth-child(3) {
+            width: 15%;
+        }
+        
+        .table th:nth-child(4), 
+        .table td:nth-child(4) {
+            width: 40%;
+        }
+        
+        .table th:nth-child(5), 
+        .table td:nth-child(5) {
+            width: 15%;
+        }
+        
+        .table th:nth-child(6), 
+        .table td:nth-child(6) {
+            width: 10%;
+            text-align: center;
+        }
+        
+        /* Đảm bảo phần nội dung không bị khuất vào sidebar */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-left: 0;
+        }
+        
+        /* Điều chỉnh cho màn hình nhỏ */
+        @media (max-width: 992px) {
+            .layout-page {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+</html>

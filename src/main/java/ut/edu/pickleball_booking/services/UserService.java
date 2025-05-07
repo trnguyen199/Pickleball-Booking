@@ -96,5 +96,16 @@ public class UserService {
         return userRepository.findById(ownerId).orElse(null);
     }
 
+    public List<User> getUsersByRole(String roleName) {
+        return userRepository.findByRoles_Name(roleName);
+    }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+    public void addRoleToUser(User user, Role role) {
+        user.getRoles().clear(); // Xóa hết các role cũ
+        user.getRoles().add(role); // Thêm role mới
+        userRepository.save(user);
+    }
 }
 

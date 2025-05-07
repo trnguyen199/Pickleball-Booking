@@ -50,4 +50,20 @@ public class BookingStatisticsService {
     public Integer getMonthlyBookings(int year, int month) {
         return bookingStatisticsRepository.getMonthlyBookings(year, month);
     }
+
+    public BigDecimal getDailyRevenueByOwner(LocalDate date, Long ownerId) {
+        return bookingStatisticsRepository.getDailyRevenueByOwner(date, ownerId);
+    }
+
+    public BigDecimal getMonthlyRevenueByOwner(int year, int month, Long ownerId) {
+        return bookingStatisticsRepository.getMonthlyRevenueByOwner(year, month, ownerId);
+    }
+
+    public BigDecimal getYearlyRevenueByOwner(int year, Long ownerId) {
+        return bookingStatisticsRepository.getYearlyRevenueByOwner(year, ownerId);
+    }
+
+    public Integer getMonthlyBookingsByOwner(int year, int month, Long ownerId) {
+        return bookingStatisticsRepository.getMonthlyBookingsByOwner(year, month, ownerId);
+    }
 }

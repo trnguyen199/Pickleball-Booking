@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
 <body>
+    <link rel="stylesheet" th:href="@{/css/datsan.css}">
     <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
     <th:block th:fragment="layout-content">
         <div class="container-booking">
@@ -70,212 +71,104 @@
             </div>
           </div>
         </div>
-        
+      </div>
     </th:block>
     <div th:replace="fragments/_layoutfooter::layout-footer"></div>
 
 </body>
-<style>
-
-
-    .booking-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      min-width: 1000px;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    th {
-      background-color: #6FC7E1;
-    }
-
-    .time-col {
-      background-color: #f9f9f9;
-      font-weight: bold;
-    }
-
-    .today-btn {
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
-
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 10px 0;
-      margin-top: 100px;
-    }
-
-    .view-toggle button {
-      margin-left: 8px;
-      padding: 5px 10px;
-    }
-
-    .price-cell {
-      background-color: #fefefe;
-      border-radius: 4px;
-    }
-    .selected {
-      background-color: rgba(0, 255, 0, 0.3);
-    }
-    .disabled {
-      background-color: #eee;
-      color: #999;
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    /* Khung chứa toàn bộ phần đánh giá */
-    .review-box {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-      padding: 24px 32px;
-      width: 100%;
-    }
-
-    /* Trung bình sao */
-    .average-rating {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
-      font-size: 1.2em;
-      font-weight: 500;
-      color: #333;
-    }
-    .average-stars {
-      color: #ffc107;
-      font-size: 1.5em;
-    }
-
-    /* Danh sách đánh giá */
-    .review-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    /* Từng đánh giá */
-    .review-card {
-      background: #f9f9f9;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      padding: 16px 20px;
-      border: 1px solid #e0e0e0;
-    }
-
-    /* Header của đánh giá */
-    .review-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    /* Tên người dùng */
-    .review-user {
-      font-weight: 600;
-      color: #1976d2;
-    }
-
-    /* Xếp hạng sao */
-    .review-rating {
-      color: #ffc107;
-      font-size: 1.1em;
-    }
-
-    /* Nội dung đánh giá */
-    .review-content {
-      margin: 8px 0 0 0;
-      color: #333;
-    }
-    /* Ngôi sao mặc định */
-    
-  .star {
-      font-size: 24px; /* Kích thước ngôi sao */
-      width: 24px;
-      display: inline-block;
-      position: relative;
-      color: gray; /* Màu sao trống */
-  }
-  /* Ngôi sao đầy đủ */
-  .star.on {
-      color: #ffc107; /* Màu vàng cho sao đầy đủ */
-  }
-  /* Nửa sao */
-  .star.half::before {
-      content: '\2605'; /* Biểu tượng ngôi sao đầy đủ */
-      position: absolute;
-      color: #ddd; /* Màu sao trống */
-      z-index: 1;
-      left: 0;
-      top: 0;
-  }
-
-  .star.half::after {
-      content: '\2605'; /* Biểu tượng ngôi sao đầy đủ */
-      position: absolute;
-      color: #ffc107; /* Màu sao vàng */
-      z-index: 2;
-      left: 0;
-      top: 0;
-      width: 50%; /* Hiển thị nửa ngôi sao */
-      overflow: hidden;
-      display: inline-block;
-  }
-  </style>
-
-  <script>
-    const priceCells = document.querySelectorAll('.price-cell');
-    const bookingBtn = document.querySelector('.btn-datsan');
-    let selectedSlots = [];
+<script>
+  const priceCells = document.querySelectorAll('.price-cell');
+  const bookingBtn = document.querySelector('.btn-datsan');
+  let selectedSlots = [];
   
-    priceCells.forEach(cell => {
-      cell.addEventListener('click', function () {
-        const row = this.closest('tr');
-        const time = row.querySelector('.time-col').innerText;
+  priceCells.forEach(cell => {
+    cell.addEventListener('click', function () {
+      const row = this.closest('tr');
+      const time = row.querySelector('.time-col').innerText;
   
-        // Lấy vị trí cột hiện tại
-        const colIndex = Array.from(row.children).indexOf(this);
+      const colIndex = Array.from(row.children).indexOf(this);
   
-        // Lấy đúng tiêu đề ngày từ thead (bỏ cột đầu tiên là "Thời gian")
-        const day = document.querySelectorAll('thead th')[colIndex].innerText.trim();
+      const dayHeader = document.querySelectorAll('thead th')[colIndex];
+      const day = dayHeader ? dayHeader.innerText.trim() : '';
   
-        const priceText = this.innerText.trim();
-        const price = parseInt(priceText.replace(/\D/g, '')) || 0;
+      const priceText = this.innerText.trim();
+      const price = parseInt(priceText.replace(/\D/g, '')) || 0;
   
-        const slot = { time, day, price };
+      // Tạo id giả cho timeSlotId (thực tế bạn nên có timeSlotId thực tế từ server)
+      const timeSlotId = row.rowIndex * 10 + colIndex; 
   
-        const index = selectedSlots.findIndex(
-          item => item.time === time && item.day === day
-        );
+      // Xử lý ngày booking từ tiêu đề cột (nếu header có dạng "Thứ Hai (29/4)")
+      let bookingDate = '';
+      if (day.includes('(') && day.includes(')')) {
+        const dateStr = day.split('(')[1].split(')')[0]; // "29/4"
+        const [dayNum, monthNum] = dateStr.split('/');
+        const today = new Date();
+        const year = today.getFullYear();
+        bookingDate = `${year}-${monthNum.padStart(2, '0')}-${dayNum.padStart(2, '0')}`; // yyyy-MM-dd
+      }
   
-        if (this.classList.contains('selected')) {
-          this.classList.remove('selected');
-          if (index !== -1) selectedSlots.splice(index, 1);
-        } else {
-          this.classList.add('selected');
-          if (index === -1) selectedSlots.push(slot);
-        }
+      const slot = { 
+        time, 
+        day, 
+        price, 
+        timeSlotId, 
+        bookingDate 
+      };
   
-        console.log('Selected Slots:', selectedSlots);
-      });
+      const index = selectedSlots.findIndex(
+        item => item.time === time && item.day === day
+      );
+  
+      if (this.classList.contains('selected')) {
+        this.classList.remove('selected');
+        if (index !== -1) selectedSlots.splice(index, 1);
+      } else {
+        this.classList.add('selected');
+        if (index === -1) selectedSlots.push(slot);
+      }
+  
+      console.log('Selected Slots:', selectedSlots);
     });
+  });
   
-    // Xử lý khi nhấn nút đặt sân
-    bookingBtn.addEventListener('click', function () {
+  // Xử lý khi nhấn nút đặt sân
+//   bookingBtn.addEventListener('click', async function () {
+//     if (selectedSlots.length === 0) {
+//         alert('Vui lòng chọn ít nhất một khung giờ.');
+//         return;
+//     }
+//
+//     const userId = window.currentUserId || 1;
+//     const courtId = window.currentCourtId || 1;
+//
+//     const bookingRequests = selectedSlots.map(slot => ({
+//         userId: userId,
+//         courtId: courtId,
+//         timeSlotId: slot.timeSlotId,
+//         price: slot.price,
+//         bookingDate: slot.bookingDate
+//     }));
+//
+//     try {
+//         const res = await fetch('/api/bookings/save', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'Accept': 'application/json'
+//             },
+//             body: JSON.stringify(bookingRequests) // gửi 1 danh sách!
+//         });
+//         if (!res.ok) throw new Error('Không lưu được thông tin đặt sân!');
+//     } catch (error) {
+//         alert('Có lỗi xảy ra khi đặt sân: ' + error.message);
+//         return;
+//     }
+//       alert('Đặt sân thành công!');
+//       window.location.href = '/trangchu';
+//
+//
+// });
+  bookingBtn.addEventListener('click', function () {
       if (selectedSlots.length === 0) {
           alert('Vui lòng chọn ít nhất một khung giờ.');
           return;
@@ -288,10 +181,9 @@
 
       localStorage.setItem('bookingData', JSON.stringify(bookingData)); // Lưu vào localStorage
       window.location.href = 'thanhtoan'; // Chuyển đến trang thanh toán
-    });
+  });
 
-
-    //week hiện tại 
+  //week hiện tại
     let currentWeekOffset = 0; // Biến lưu trữ tuần hiện tại (0 là tuần này, 1 là tuần sau, -1 là tuần trước)
 
     function updateWeek(offset) {
@@ -326,7 +218,8 @@
 
         // Cập nhật trạng thái các ô
         disablePastDates(weekDates);
-
+        selectedSlots = [];
+        document.querySelectorAll('.price-cell.selected').forEach(cell => cell.classList.remove('selected'));
         // Hiển thị hoặc ẩn nút "Tuần trước"
         const prevWeekBtn = document.getElementById("prev-week-btn");
         if (currentWeekOffset > 0) {
@@ -335,7 +228,8 @@
             prevWeekBtn.style.display = "none"; // Ẩn nút "Tuần trước"
         }
     }
-
+    
+   
     function formatDayVN(date) {
         const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
         const dayName = days[date.getDay()];

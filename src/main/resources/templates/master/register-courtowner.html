@@ -1,0 +1,76 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <meta name="_csrf_parameter" th:content="${_csrf.parameterName}"/>
+</head>
+<body>
+  <div th:replace="fragments/_layoutnavbar :: layout-navbar"></div>
+
+  <th:block th:fragment="layout-content">
+    <main class="form-thanhtoan">
+      <div id="booking-info"></div>
+      <button id="confirm-payment" class="btn-confirm">Thanh toán</button>
+    </main>
+  </th:block>
+
+  <div th:replace="fragments/_layoutfooter :: layout-footer"></div>
+</body>
+
+<style>
+  .form-thanhtoan {
+    min-height: 80vh; display:flex;
+    flex-direction:column; align-items:center;
+    justify-content:center; text-align:center;
+  }
+  #booking-info {
+    background:#f9f9f9; padding:20px;
+    border-radius:8px; margin-bottom:20px;
+  }
+  .btn-confirm {
+    padding:12px 30px; background:#28a745;
+    color:#fff; border:none; border-radius:5px;
+    font-size:16px; cursor:pointer;
+  }
+  .btn-confirm:hover { background:#218838; }
+</style>
+
+<script>
+  // Lấy data từ localStorage
+  const data = JSON.parse(localStorage.getItem('registerCourtOwnerData'));
+  if (data) {
+    document.getElementById('booking-info').innerHTML = `
+      <h3>Thông tin đăng ký sân</h3>
+      <p>${data.label}</p>
+    `;
+  } else {
+    document.getElementById('booking-info').innerHTML = '<p>Không có thông tin đăng ký.</p>';
+  }
+
+  // Khi ấn Thanh toán, tạo form POST đến controller
+  document.getElementById('confirm-payment').addEventListener('click', function() {
+    if (!data) return;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/danhchochusan/thanhtoan/setuser';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'plan';
+    input.value = data.plan;
+    form.appendChild(input);
+    // Lấy CSRF token từ meta tag do Thymeleaf sinh ra
+    const csrfParam = document.querySelector('meta[name="_csrf_parameter"]')?.getAttribute('content') || '_csrf';
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    if (csrfToken) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = csrfParam;
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+    }
+    document.body.appendChild(form);
+    form.submit();
+  });
+</script>
+</html>

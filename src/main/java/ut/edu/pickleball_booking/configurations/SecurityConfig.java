@@ -20,12 +20,13 @@ public class SecurityConfig {
                                                    CustomLoginSuccessHandler loginSuccessHandler) throws Exception {
         http
                 .csrf()
-                .ignoringRequestMatchers("/api/**","/danhchochusan/manage-timeslots/save")
+                .ignoringRequestMatchers("/api/**","/danhchochusan/manage-timeslots/save", "/admin/admin-contact/reply","/danhchochusan/thanhtoan","/danhchochusan/thanhtoan/setuser")
                 .and()
                     .authorizeHttpRequests()
-                    .requestMatchers("/profile", "/courts/create").authenticated()
+                    
+                    .requestMatchers("/profile", "/courts/create","/danhchochusan/**").authenticated()
                     .requestMatchers(HttpMethod.POST, "/profile/update").authenticated()
-                    .requestMatchers("/login","/forgot-password","verify-code","/reset-password").permitAll()
+                    .requestMatchers("/login","/forgot-password","verify-code","/reset-password","/danhchochusan/thanhtoan/setuser").permitAll()
                     .requestMatchers("/", "/danhchochusan/thanhtoan","/danhchochusan/manage-timeslots/save", "/danhsachsan", "/assets/**").permitAll()
                     .anyRequest().permitAll()
                 .and()

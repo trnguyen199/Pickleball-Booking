@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import ut.edu.pickleball_booking.entity.*;
 import ut.edu.pickleball_booking.repositories.CourtRepository;
+import ut.edu.pickleball_booking.repositories.RoleRepository;
 import ut.edu.pickleball_booking.repositories.TimeSlotRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,28 +40,27 @@ public class DanhChoChuSanController {
     private final CourtRepository courtRepository;
     private final TimeSlotRepository timeSlotRepository;
     private final BookingService bookingService;
+    private final RoleRepository roleRepository;
     private final BookingStatisticsService bookingStatisticsService;
     private static final Logger logger = LoggerFactory.getLogger(DanhChoChuSanController.class);
 
-
+    
     @Autowired
-    public DanhChoChuSanController(UserService userService, CourtService courtService,CourtRepository courtRepository, TimeSlotRepository timeSlotRepository, BookingService bookingService, BookingStatisticsService bookingStatisticsService) {
+    public DanhChoChuSanController(UserService userService, CourtService courtService,CourtRepository courtRepository, TimeSlotRepository timeSlotRepository, BookingService bookingService, BookingStatisticsService bookingStatisticsService, RoleRepository roleRepository) {
         this.userService = userService;
         this.courtService = courtService;
         this.courtRepository = courtRepository;
         this.timeSlotRepository = timeSlotRepository;
         this.bookingService = bookingService;
         this.bookingStatisticsService = bookingStatisticsService;
-
+        this.roleRepository = roleRepository;
     }
     
-            
-
 
     @GetMapping("/danhchochusan")
     public String getDanhSachSan(Model model, Principal principal, HttpSession session) {
         if (principal == null) {
-            return "redirect:/login"; 
+            return "redirect:/login"; // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
         }
     
         // Lấy username của người dùng đã đăng nhập
@@ -94,11 +94,32 @@ public class DanhChoChuSanController {
             return "manage/manage-statistics"; // Trả về template cho chủ sân
         }
     
-        // Nếu không thuộc vai trò nào, yêu cầu đăng nhập
         System.out.println("User has no valid role. Redirecting to login page.");
         return "redirect:/login";
     }
 
+    @PostMapping("/danhchochusan/thanhtoan/setuser")
+    public String handlePayment(HttpSession session, Principal principal, Model model) {
+        // Lấy username từ principal
+        String username = principal.getName();
+        User user = userService.findByUsername(username);
+
+        // Lấy role_owner từ DB
+        Role ownerRole = roleRepository.findByName("ROLE_OWNER")
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy role OWNER"));
+        if (ownerRole == null) {
+            throw new RuntimeException("Không tìm thấy role OWNER");
+        }
+
+        // Thêm role_owner cho user nếu chưa có
+        userService.addRoleToUser(user, ownerRole);
+
+        // Có thể thêm logic tạo sân ở đây nếu cần
+
+        // Hiển thị lại trang hoặc chuyển hướng
+        model.addAttribute("message", "Bạn đã trở thành chủ sân!");
+        return "master/register-courtowner";
+    }
     @PostMapping("/danhchochusan/thanhtoan")
     public String handlePayment(@RequestParam("plan") String plan, Model model) {
         System.out.println("Selected plan: " + plan);
@@ -110,18 +131,11 @@ public class DanhChoChuSanController {
         return "master/thanhtoan";
 
     }
-
-    // @GetMapping("/danhchochusan/update-info")
-    // public String updateInfo(Model model, Principal principal) {
-    //     if (principal == null) {
-    //         return "redirect:/login";
-    //     }
-    //     String username = principal.getName();
-    //     model.addAttribute("user", userService.findByUsername(username));
-    //     model.addAttribute("roles", userService.getRolesByUsername(username));
-    //     return "manage/update-info"; 
+    // @GetMapping("/danhchochusan/thanhtoan")
+    // public String showPaymentPage() {
+    //     return "master/register-courtowner";
     // }
-
+    
     @GetMapping("/danhchochusan/manage-courts")
     public String manageCourts(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
@@ -207,17 +221,14 @@ public class DanhChoChuSanController {
 
     @GetMapping("/danhchochusan/statistics-data")
     @ResponseBody
-    public Map<String, Object> getStatisticsData() {
+    public Map<String, Object> getStatisticsData(HttpSession session) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        if (ownerId == null) return Collections.emptyMap();
+
         LocalDate today = LocalDate.now();
-
-        BigDecimal dailyRevenue = bookingStatisticsService.getDailyRevenue(today);
-        BigDecimal monthlyRevenue = bookingStatisticsService.getMonthlyRevenue(today.getYear(), today.getMonthValue());
-        BigDecimal yearlyRevenue = bookingStatisticsService.getYearlyRevenue(today.getYear());
-
-        // Log dữ liệu để kiểm tra
-        System.out.println("Daily Revenue: " + dailyRevenue);
-        System.out.println("Monthly Revenue: " + monthlyRevenue);
-        System.out.println("Yearly Revenue: " + yearlyRevenue);
+        BigDecimal dailyRevenue = bookingStatisticsService.getDailyRevenueByOwner(today, ownerId);
+        BigDecimal monthlyRevenue = bookingStatisticsService.getMonthlyRevenueByOwner(today.getYear(), today.getMonthValue(), ownerId);
+        BigDecimal yearlyRevenue = bookingStatisticsService.getYearlyRevenueByOwner(today.getYear(), ownerId);
 
         Map<String, Object> data = new HashMap<>();
         data.put("dailyRevenue", dailyRevenue != null ? dailyRevenue : BigDecimal.ZERO);
@@ -229,29 +240,21 @@ public class DanhChoChuSanController {
 
     @GetMapping("/danhchochusan/statistics-chart-data")
     @ResponseBody
-    public Map<String, Object> getStatisticsChartData() {
-        // Dữ liệu mẫu cho 12 tháng
-        List<String> months = Arrays.asList("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12");
+    public Map<String, Object> getStatisticsChartData(HttpSession session) {
+        Long ownerId = (Long) session.getAttribute("userId");
+        if (ownerId == null) return Collections.emptyMap();
 
-        // Lấy dữ liệu doanh thu và số lượt đặt sân từ bảng booking_statistics
+        List<String> months = Arrays.asList("Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12");
         List<BigDecimal> revenue = new ArrayList<>();
         List<Integer> bookings = new ArrayList<>();
 
         for (int month = 1; month <= 12; month++) {
-            BigDecimal monthlyRevenue = bookingStatisticsService.getMonthlyRevenue(2025, month);
-            Integer monthlyBookings = bookingStatisticsService.getMonthlyBookings(2025, month);
-
-            // Log dữ liệu để kiểm tra
-            logger.info("Tháng {}: Doanh thu = {}, Số lượt đặt = {}", month, monthlyRevenue, monthlyBookings);
-
-            // Đảm bảo doanh thu không bị chia nhỏ
-            BigDecimal normalizedRevenue = (monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO);
-
-            revenue.add(normalizedRevenue);
+            BigDecimal monthlyRevenue = bookingStatisticsService.getMonthlyRevenueByOwner(2025, month, ownerId);
+            Integer monthlyBookings = bookingStatisticsService.getMonthlyBookingsByOwner(2025, month, ownerId);
+            revenue.add(monthlyRevenue != null ? monthlyRevenue : BigDecimal.ZERO);
             bookings.add(monthlyBookings != null ? monthlyBookings : 0);
         }
 
-        // Trả về dữ liệu dưới dạng JSON
         Map<String, Object> data = new HashMap<>();
         data.put("months", months);
         data.put("revenue", revenue);
@@ -259,6 +262,7 @@ public class DanhChoChuSanController {
 
         return data;
     }
+
     @GetMapping("/danhchochusan/reviews")
     public String reviews(@RequestParam(value = "courtId", required = false) Long courtId, HttpSession session, Model model) {
         Long ownerId = (Long) session.getAttribute("userId");

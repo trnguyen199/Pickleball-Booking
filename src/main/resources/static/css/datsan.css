@@ -1,0 +1,239 @@
+body {
+    background: #f4f8fb;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
+    padding-top: 90px;
+}
+
+.container-booking {
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 4px 24px rgba(30, 144, 255, 0.10);
+    padding: 36px 28px 28px 28px;
+    margin: 10px auto;
+    max-width: 90%;
+}
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px 0 24px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.today-btn, .view-toggle button {
+    padding: 7px 18px;
+    border-radius: 8px;
+    border: 1px solid #1e90ff;
+    background: #fff;
+    color: #1e90ff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+.today-btn:hover, .view-toggle button:hover {
+    background: #1e90ff;
+    color: #fff;
+}
+
+#current-week {
+    font-weight: 700;
+    color: #0a3d91;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.booking-wrapper {
+    overflow-x: auto;
+    margin-bottom: 32px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1000px;
+    background: #f8fbff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 10px;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 1.05rem;
+}
+
+th {
+    background-color: #e3f3fa;
+    color: #0a3d91;
+    font-weight: 700;
+}
+
+.time-col {
+    background-color: #f9f9f9;
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.price-cell {
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    font-weight: 500;
+}
+.price-cell.selected {
+    background-color: #d1f7e8;
+    color: #009688;
+    border: 2px solid #1e90ff;
+}
+.price-cell.disabled {
+    background-color: #eee;
+    color: #999;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.btn-datsan {
+    display: block;
+    margin: 28px auto 0 auto;
+    padding: 12px 36px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #1e90ff 0%, #0ca6b1 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    box-shadow: 0 2px 8px rgba(30,144,255,0.08);
+    transition: background 0.2s;
+}
+.btn-datsan:hover {
+    background: linear-gradient(90deg, #0ca6b1 0%, #1e90ff 100%);
+    color: #fff;
+}
+
+.court-reviews {
+    margin-top: 40px;
+}
+
+.review-box {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    padding: 24px 32px;
+    width: 100%;
+}
+
+.average-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #333;
+}
+.average-stars {
+    color: #ffc107;
+    font-size: 1.5em;
+}
+
+.review-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.review-card {
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 16px 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.review-user {
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.review-rating {
+    color: #ffc107;
+    font-size: 1.1em;
+}
+
+.review-content {
+    margin: 8px 0 0 0;
+    color: #333;
+}
+
+.star {
+    font-size: 24px;
+    width: 24px;
+    display: inline-block;
+    position: relative;
+    color: gray;
+}
+.star.on {
+    color: #ffc107;
+}
+.star.half::before {
+    content: '\2605';
+    position: absolute;
+    color: #ddd;
+    z-index: 1;
+    left: 0;
+    top: 0;
+}
+.star.half::after {
+    content: '\2605';
+    position: absolute;
+    color: #ffc107;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 50%;
+    overflow: hidden;
+    display: inline-block;
+}
+
+@media (max-width: 1100px) {
+    .container-booking {
+        padding: 18px 4px 12px 4px;
+    }
+    .review-box {
+        padding: 14px 4px;
+    }
+    table {
+        min-width: 700px;
+    }
+}
+
+@media (max-width: 767px) {
+    .container-booking {
+        margin: 10px 0;
+        padding: 8px 0 8px 0;
+    }
+    .review-box {
+        padding: 8px 2px;
+    }
+    table {
+        min-width: 400px;
+    }
+    .nav-controls {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+}

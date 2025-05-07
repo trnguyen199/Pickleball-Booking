@@ -11,12 +11,19 @@ public class TimeSlot {
     private String startTime;
     private String endTime;
     private int price;
-
+    private String time;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "court_id", nullable = false)
     private Court court;
-
+    
+    public String getTime() {
+        return time;
+    }
+    
+    public void setTime(String time) {
+        this.time = time;
+    }
     // Getters and Setters
     public Long getId() {
         return id;

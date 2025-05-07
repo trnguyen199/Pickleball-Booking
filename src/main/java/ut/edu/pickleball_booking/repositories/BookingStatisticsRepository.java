@@ -8,12 +8,6 @@ import ut.edu.pickleball_booking.entity.BookingStatistics;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.ArrayList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public interface BookingStatisticsRepository extends JpaRepository<BookingStatistics, Long> {
 
@@ -30,4 +24,17 @@ public interface BookingStatisticsRepository extends JpaRepository<BookingStatis
 
     @Query("SELECT SUM(bookings) FROM BookingStatistics WHERE YEAR(date) = :year AND MONTH(date) = :month")
     Integer getMonthlyBookings(@Param("year") int year, @Param("month") int month);
+
+    // --- THÊM CÁC TRUY VẤN THEO OWNER ---
+    @Query("SELECT SUM(revenue) FROM BookingStatistics WHERE date = :date AND owner.id = :ownerId")
+    BigDecimal getDailyRevenueByOwner(@Param("date") LocalDate date, @Param("ownerId") Long ownerId);
+
+    @Query("SELECT SUM(revenue) FROM BookingStatistics WHERE YEAR(date) = :year AND MONTH(date) = :month AND owner.id = :ownerId")
+    BigDecimal getMonthlyRevenueByOwner(@Param("year") int year, @Param("month") int month, @Param("ownerId") Long ownerId);
+
+    @Query("SELECT SUM(revenue) FROM BookingStatistics WHERE YEAR(date) = :year AND owner.id = :ownerId")
+    BigDecimal getYearlyRevenueByOwner(@Param("year") int year, @Param("ownerId") Long ownerId);
+
+    @Query("SELECT SUM(bookings) FROM BookingStatistics WHERE YEAR(date) = :year AND MONTH(date) = :month AND owner.id = :ownerId")
+    Integer getMonthlyBookingsByOwner(@Param("year") int year, @Param("month") int month, @Param("ownerId") Long ownerId);
 }

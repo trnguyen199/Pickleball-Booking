@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import ut.edu.pickleball_booking.entity.User;
@@ -26,7 +27,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        // Lấy AuthService thông qua ApplicationContext để tránh circular dependency
         AuthService authService = context.getBean(AuthService.class);
         String username = authentication.getName();
         User user = authService.getUserByUsername(username);
@@ -36,8 +36,16 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             session.setAttribute("loggedIn", true);
             session.setAttribute("username", user.getUsername());
             session.setAttribute("userId", user.getId());
+            
+            // Kiểm tra nếu là tài khoản admin
+            if ("admin".equals(username) || 
+                authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+                response.sendRedirect("/admin/dashboard");
+                return;
+            }
         }
 
+        // Nếu không phải admin thì chuyển về trang chủ
         response.sendRedirect("/trangchu");
     }
 }

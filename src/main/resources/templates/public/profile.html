@@ -58,14 +58,14 @@
                         <td th:text="${booking.price} + '₫'">Số tiền</td>
                         <td>
                     <span th:if="${booking.review != null}">
-                      <span th:text="${booking.review}"></span>
+                     <!-- <span th:text="${booking.review}"></span>
                       <span th:if="${booking.rating != null}">
-                        (<span th:text="${booking.rating}"></span>⭐)
+                        (<span th:text="${booking.rating}"></span>⭐)-->
                       </span>
                       <button class="review-btn" disabled style="opacity:0.5;cursor:not-allowed;">Đã đánh giá</button>
-                    </span>
-                            <button th:if="${booking.review == null}" class="review-btn" type="button"
-                                    th:attr="onclick=|showReviewForm('${booking.id}')|">Đánh giá</button>
+                        </span>
+                        <button th:if="${booking.review == null}" class="review-btn" type="button"
+                                th:attr="onclick=|showReviewForm('${booking.id}')|">Đánh giá</button>
                         </td>
                     </tr>
                     <!-- Dòng khác sẽ lặp ở đây -->

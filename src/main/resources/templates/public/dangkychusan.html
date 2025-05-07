@@ -2,82 +2,57 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head :: head"></head>
 <body>
-    <div th:replace="fragments/_layoutnavbar::layout-navbar"></div>
-    <th:block th:fragment="layout-content">
-        <div class="container">
+  <div th:replace="fragments/_layoutnavbar :: layout-navbar"></div>
 
-            <div class="card">
-                <h2>Đăng ký làm chủ sân</h2>
-                <form action="/danhchochusan/thanhtoan" method="post" th:object="${_csrf}">
-                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                  <div class="option-group">
-                      <label><input type="radio" name="plan" value="1_thang" required> 1 tháng – 300.000 VND</label>
-                      <label><input type="radio" name="plan" value="3_thang"> 3 tháng – 850.000 VND</label>
-                      <label><input type="radio" name="plan" value="6_thang"> 6 tháng – 1.600.000 VND</label>
-                      <label><input type="radio" name="plan" value="1_nam"> 1 năm – 3.000.000 VND</label>
-                  </div>
-                <button type="submit" class="btn-register">Đăng ký ngay</button>
-                </form>
-          </div>
-            
+  <th:block th:fragment="layout-content">
+    <div class="container">
+      <div class="card">
+        <h2>Đăng ký làm chủ sân</h2>
+        <div class="option-group">
+          <label><input type="radio" name="plan" value="1_thang"> 1 tháng – 300.000 VND</label>
+          <label><input type="radio" name="plan" value="3_thang"> 3 tháng – 850.000 VND</label>
+          <label><input type="radio" name="plan" value="6_thang"> 6 tháng – 1.600.000 VND</label>
+          <label><input type="radio" name="plan" value="1_nam"> 1 năm – 3.000.000 VND</label>
         </div>
-    </th:block>
-    <div th:replace="fragments/_layoutfooter::layout-footer"></div>
+        <button id="confirm-registration" class="btn-register">Đăng ký ngay</button>
+      </div>
+    </div>
+  </th:block>
 
+  <div th:replace="fragments/_layoutfooter :: layout-footer"></div>
 </body>
+
 <style>
-    .container {
-        min-height: 100vh;
+  .container { min-height:100vh; }
+  .card {
+    background:#fff; max-width:400px; margin:200px auto;
+    padding:30px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    text-align:center;
+  }
+  .card h2 { margin-bottom:20px; color:#2c3e50; }
+  .option-group label { display:block; margin-bottom:10px; font-size:16px; }
+  .option-group input { margin-right:8px; }
+  .btn-register {
+    margin-top:20px; padding:12px; width:100%;
+    background:#3498db; color:#fff; font-weight:bold;
+    border:none; border-radius:5px; cursor:pointer;
+  }
+  .btn-register:hover { background:#2980b9; }
+</style>
+
+<script>
+  document.getElementById('confirm-registration').addEventListener('click', function() {
+    const selected = document.querySelector('input[name="plan"]:checked');
+    if (!selected) {
+      alert('Vui lòng chọn gói thanh toán');
+      return;
     }
-    .card {
-        background: white;
-        max-width: 400px;
-        margin: 40px auto;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        padding: 30px;
-        margin-top: 200px;
-      }
-    
-      .card h2 {
-        margin-bottom: 20px;
-        text-align: center;
-        color: #2c3e50;
-      }
-      .card label {
-        color: #2c3e50;
-      }
-      form {
-        display: flex;
-        flex-direction: column;
-      }
-  
-      .option-group {
-        margin-bottom: 20px;
-      }
-  
-      .option-group label {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 16px;
-      }
-  
-      .option-group input[type="radio"] {
-        margin-right: 10px;
-      }
-  
-      .btn-register {
-        padding: 12px;
-        background-color: #3498db;
-        color: white;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-  
-      .btn-register:hover {
-        background-color: #2980b9;
-      }
-    </style>
+    const plan = selected.value;
+    // Lấy toàn bộ text label để hiển thị lại
+    const labelText = selected.parentElement.textContent.trim();
+    localStorage.setItem('registerCourtOwnerData', JSON.stringify({ plan, label: labelText }));
+    // Chuyển sang trang thanh toán
+    window.location.href = '/danhchochusan/thanhtoangoi';
+  });
+</script>
 </html>

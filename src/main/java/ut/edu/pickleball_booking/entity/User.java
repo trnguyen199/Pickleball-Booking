@@ -30,7 +30,6 @@ public class User {
     private String phone;
     private String address;
 
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",

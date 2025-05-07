@@ -21,6 +21,10 @@ public class BookingStatistics {
     @Column(nullable = false)
     private BigDecimal revenue;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -52,5 +56,13 @@ public class BookingStatistics {
 
     public void setRevenue(BigDecimal revenue) {
         this.revenue = revenue;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }

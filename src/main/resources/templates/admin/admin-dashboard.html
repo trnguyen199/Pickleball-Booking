@@ -8,7 +8,89 @@
             <div th:replace="fragments/_layoutsidebaradmin::sidebar-admin"></div>
 
             <th:block th:fragment="layout-courtmanage" >
-            
+                <div class="content-pa">
+                    <h1>Thống kê Doanh thu</h1>
+                    <section id="revenue">
+                        <h2>Doanh thu</h2>
+                        <div class="stat">
+                            <span class="stat-title">Doanh thu theo ngày</span>
+                            <span class="stat-value" id="daily-revenue">Đang tải...</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-title">Doanh thu theo tháng</span>
+                            <span class="stat-value" id="monthly-revenue">Đang tải...</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-title">Doanh thu theo năm</span>
+                            <span class="stat-value" id="yearly-revenue">Đang tải...</span>
+                        </div>
+                    </section>
+                    <section id="charts">
+                        <h2>Biểu đồ doanh thu theo tháng</h2>
+                        <div class="chart-container">
+                            <canvas id="monthlyRevenueChart"></canvas>
+                        </div>
+                    </section>
+                </div>
+                <script>
+                    // Gọi API để lấy dữ liệu thống kê doanh thu
+                    fetch('/admin/statistics-data')
+                        .then(response => response.json())
+                        .then(data => {
+                            // Định dạng số thành VND
+                            const formatCurrency = (value) => {
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                            };
+
+                            // Cập nhật dữ liệu vào giao diện
+                            document.getElementById('daily-revenue').innerText = formatCurrency(data.dailyRevenue);
+                            document.getElementById('monthly-revenue').innerText = formatCurrency(data.monthlyRevenue);
+                            document.getElementById('yearly-revenue').innerText = formatCurrency(data.yearlyRevenue);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching statistics data:', error);
+                            document.getElementById('daily-revenue').innerText = 'Lỗi tải dữ liệu';
+                            document.getElementById('monthly-revenue').innerText = 'Lỗi tải dữ liệu';
+                            document.getElementById('yearly-revenue').innerText = 'Lỗi tải dữ liệu';
+                        });
+
+                    // Gọi API để lấy dữ liệu biểu đồ doanh thu theo tháng
+                    fetch('/admin/statistics-chart-data')
+                        .then(response => response.json())
+                        .then(data => {
+                            const months = data.months;
+                            const revenues = data.revenues;
+
+                            // Cập nhật biểu đồ doanh thu theo tháng
+                            const monthlyRevenueChart = new Chart(document.getElementById('monthlyRevenueChart').getContext('2d'), {
+                                type: 'line',
+                                data: {
+                                    labels: months,
+                                    datasets: [{
+                                        label: 'Doanh thu (VND)',
+                                        data: revenues,
+                                        borderColor: '#3498db',
+                                        fill: false
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                callback: function(value) {
+                                                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        })
+                        .catch(error => console.error('Error fetching monthly revenue data:', error));
+                </script>
             </th:block>
         </div>
         

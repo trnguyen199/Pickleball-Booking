@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     List<TimeSlot> findByCourtId(Long courtId);
+    TimeSlot findByCourtIdAndTime(Long courtId, String time);
 }
